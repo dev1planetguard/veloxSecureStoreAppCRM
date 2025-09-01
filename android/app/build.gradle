@@ -1,3 +1,5 @@
+//react = [nodeExecutableAndArgs: [project.hasProperty("NODE_BINARY") ? project.getProperty("NODE_BINARY") : "node"]]
+
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
