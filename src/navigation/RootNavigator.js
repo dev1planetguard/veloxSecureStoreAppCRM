@@ -7,6 +7,8 @@ import AdminDrawer from './drawers/AdminDrawer';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 // import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import SplashScreen from '../screen/SplashScreen';
 const Stack = createNativeStackNavigator();
 
 const RootNavigator = () => {
@@ -15,12 +17,12 @@ const RootNavigator = () => {
 
     useEffect(() => {
         const checkAuth = async () => {
-            // const token = await AsyncStorage.getItem('jwtToken');
-            // const role = await AsyncStorage.getItem('roleType');
+            const token = await AsyncStorage.getItem('jwtToken');
+            const role = await AsyncStorage.getItem('roleType');
 
-            // if (token && role) {
+            if (token && role) {
                 setRoleType(role);
-            // }
+            }
 
             setIsLoading(false);
         };
@@ -35,24 +37,26 @@ const RootNavigator = () => {
             </View>
         );
     }
-
+const Stack = createNativeStackNavigator();
     return (
-        <NavigationContainer>
-            {roleType === 'Admin' ? (
-                <AdminDrawer />
-            ) : roleType === 'Sales' ? (
-                <SalesDrawer />
-            )  : (
-                <AuthStack />
-            )}
-        </NavigationContainer>
+        // <NavigationContainer>
+        //     {roleType === 'Admin' ? (
+        //         <AdminDrawer />
+        //     ) : roleType === 'Sales' ? (
+        //         <SalesDrawer />
+        //         // <SplashScreen/>
+        //     )  : (
+        //         <AuthStack />
+        //     )}
+        // </NavigationContainer>
 
 
-//  <NavigationContainer>
-//       <Stack.Navigator screenOptions={{ headerShown: false }}>
-//         <Stack.Screen name="SplashScreen" component={() => <View style={{flex:1,justifyContent:'center',alignItems:'center'}}><Text>Hello World</Text></View>} />
-//       </Stack.Navigator>
-//     </NavigationContainer>
+ <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="SplashScreen" component={AuthStack} />
+        <Stack.Screen name="SalesDashboard" component={SalesDrawer} />
+      </Stack.Navigator>
+    </NavigationContainer>
     )
 }
 

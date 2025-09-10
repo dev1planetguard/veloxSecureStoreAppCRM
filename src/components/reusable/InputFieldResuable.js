@@ -31,12 +31,12 @@ const InputFieldReusable = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: wp(90),
+    width: '100%',
     alignSelf: 'center',
     marginVertical: hp(1.5),
   },
   input: {
-    height: hp(6.5),
+    height: hp(6),
     backgroundColor: '#1e1e1e',
     borderRadius: wp(2),
     paddingHorizontal: wp(4),

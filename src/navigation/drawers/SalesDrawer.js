@@ -1,68 +1,49 @@
-// import { View, Text } from 'react-native'
-// import React, { useState } from 'react';
-// import { createDrawerNavigator } from '@react-navigation/drawer';
-// import SplashScreen from '../../screen/SplashScreen';
-// import LoginScreen from '../../screen/LoginScreen';
-// const Drawer = createDrawerNavigator();
-
-
-// const SalesDrawer = () => {
-//   const [hasCheckedOut, setHasCheckedOut] = useState(false);
-//   // if (hasCheckedOut) {
-//   //   return (
-//   //     <View style={{ flex: 1, backgroundColor: '#000' }}>
-//   //       <DailyCheckIn
-//   //         header="Daily Check-Out"
-//   //         header2="Complete your daily check-out to end your shift"
-//   //         button="Complete Check-out"
-//   //         onComplete={() => setHasCheckedOut(true)}
-//   //       />
-//   //     </View>
-//   //   );
-//   // }
-//   return (
-//     <Drawer.Navigator
-//       // drawerContent={(props) => <CustomDrawerContent logout={() => setHasCheckedOut(true)} {...props} />}
-//       screenOptions={{
-//         headerShown: false,
-//         drawerStyle: {
-//           backgroundColor: '#1e1e1e',
-//           width: 220,
-//         },
-//         drawerActiveTintColor: '#ffffff',
-//         drawerInactiveTintColor: '#ccc',
-//         drawerLabelStyle: { fontSize: 16 },
-//       }}
-//     >
-//       <Drawer.Screen name='Login' component={LoginScreen}/>
-//       {/* <Drawer.Screen name="Home" component={MeetingDashboard} />
-//       <Drawer.Screen name="SalesrepDash" component={SalesRepDashboard} />
-//       <Drawer.Screen name="Schedule Meeting" component={ScheduleMeetingScreen} />
-//       <Drawer.Screen name="Profile" component={Profile} />
-//       <Drawer.Screen name="Add Partner" component={AddPartner} />
-//       <Drawer.Screen name="View Partners" component={ViewPartners} />
-//       <Drawer.Screen name="View Assigned Products" component={ViewAssignProduct} />
-//       <Drawer.Screen name="About us" component={AboutUs} /> */}
-//     </Drawer.Navigator>
-
-//   )
-// }
-
-// export default SalesDrawer
-
-//////////////
-
-import React from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import SalesDashboard from '../../screen/SalesDashboard';
-// import CustomDrawerContent from './CustomDrawerContent';
-
+import DailyCheckIn from '../../components/moduleBased/login/DailyCheckin';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ActivityIndicator, View } from 'react-native';
 
 const Drawer = createDrawerNavigator();
 
 export default function SalesDrawer() {
+  const [hasCheckedInToday, setHasCheckedInToday] = useState(null); // null = still loading
+
+  useLayoutEffect(() => {
+    const checkDailyCheckin = async () => {
+      try {
+        const isCheckin = await AsyncStorage.getItem('IS_DAILY_CHECKIN');
+        console.log('IS_DAILY_CHECKIN:', isCheckin);
+        setHasCheckedInToday(isCheckin === 'true'); // store as boolean
+      } catch (e) {
+        console.log('Error reading AsyncStorage:', e);
+        setHasCheckedInToday(false);
+      }
+    };
+
+    checkDailyCheckin();
+  }, []);
+
+  if (hasCheckedInToday === null) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  if (!hasCheckedInToday) {
+    return (
+      <DailyCheckIn
+        header="Daily Check-In"
+        header2="Complete your daily check-in to access the dashboard"
+        onComplete={()=>setHasCheckedInToday(!hasCheckedInToday)}
+      />
+    );
+  }
+
   return (
-    // <Drawer.Navigator drawerContent={(props) => <CustomDrawerContent {...props} />}>
     <Drawer.Navigator>
       <Drawer.Screen name="SalesDashboard" component={SalesDashboard} />
     </Drawer.Navigator>

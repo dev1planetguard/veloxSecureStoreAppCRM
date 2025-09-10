@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { wp, hp } from '../../utils/responsive'; // Assumes wp/hp return % of screen
 
 const ButtonReusable = ({
@@ -8,6 +8,7 @@ const ButtonReusable = ({
   disabled = false,
   containerStyle = {},
   textStyle = {},
+  isloading
 }) => {
   return (
     <TouchableOpacity
@@ -19,18 +20,18 @@ const ButtonReusable = ({
       onPress={onPress}
       activeOpacity={0.7}
       disabled={disabled}
-    >
-      <Text style={[styles.buttonText, textStyle]}>
+    >{isloading?<ActivityIndicator color="#fff" />:<Text style={[styles.buttonText, textStyle]}>
         {label}
-      </Text>
+      </Text>}
+      
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   button: {
-    width: wp(90),  
-    height: hp(6.5), 
+    width: '100%',  
+    height: hp(6), 
     backgroundColor: '#2979FF',
     borderRadius: wp(2),
     justifyContent: 'center',

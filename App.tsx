@@ -10,7 +10,7 @@
 
 import 'react-native-reanimated';
 import {  StyleSheet, View,Text, SafeAreaView, StatusBar, } from 'react-native';
-import LoginScreen from './src/screen/LoginScreen';
+import LoginScreen from './src/screen/login/Login';
 import SplashScreen from './src/screen/SplashScreen'
 import React, { useState } from 'react';
 import { hp, wp } from './src/utils/responsive';
