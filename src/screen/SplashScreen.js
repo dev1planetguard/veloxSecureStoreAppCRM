@@ -9,7 +9,7 @@ const SplashScreen = () => {
   const handleSession = async () => {
     const userId = await AsyncStorage.getItem('userId')
     if (userId === '1') {
-      navigation.replace('AdminDrawer')
+      navigation.replace('AdminDashboard')
     }
     else {
       if (userId) {

@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import DailyCheckIn from '../components/moduleBased/login/DailyCheckin';
 
 const SalesDashboard = () => {
-  const [hasCheckedInToday,setHasCheckedInToday]= useState('false')
+  const [hasCheckedInToday,setHasCheckedInToday]= useState()
 
 
     const navigation = useNavigation();
@@ -20,10 +20,8 @@ useLayoutEffect(() => {
       console.log('Error reading AsyncStorage:', e);
     }
   };
-
   checkDailyCheckin();
 }, []);
-
 
 if (hasCheckedInToday=='false') {
      return (<DailyCheckIn header={'Daily Check-In'} header2={'Complete your daily check-in to access the dashboard'} 
@@ -32,7 +30,7 @@ if (hasCheckedInToday=='false') {
    }
 
   return (
-    <View style={{flex:1}}>
+    <View style={{flex:1,backgroundColor:'#000'}}>
       <Text>Sales Dashboarddddd</Text>
    
     </View>

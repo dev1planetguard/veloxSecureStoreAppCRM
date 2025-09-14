@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, TextInput, StyleSheet } from 'react-native';
+import { View, TextInput, StyleSheet, Text } from 'react-native';
 import GetOtpReusable from './GetOtpReusable'; // Your existing component
 import { wp, hp } from '../../utils/responsive';
 import InputFieldReusable from './InputFieldResuable';
 
 const OtpSection = ({
+  verified,
   otpSent,
   value,
   onChange,
@@ -12,7 +13,8 @@ const OtpSection = ({
   onOtpChange,
   onSendOtp,
   onVerifyOtp,
-  placeholder
+  placeholder,
+  
 }) => {
   return (
     <View style={styles.container}>
@@ -21,8 +23,8 @@ const OtpSection = ({
             <View style={{width:'70%'}}>
           <InputFieldReusable
                         placeholder={placeholder}
-                        //  value={email}
-                        //  onChangeText={setEmail}
+                         value={value}
+                         onChangeText={onChange}
                         
                         />
                         </View>
@@ -33,13 +35,22 @@ const OtpSection = ({
           />
           </View>
         </View>
-      ) : (
-        <View style={styles.row}>
+      ) : (<View style={{width:'100%'}}>
+        <View>
+          <InputFieldReusable
+                        placeholder={placeholder}
+                         value={value}
+                        //  onChangeText={onChange}
+                            />
+                        </View>
+                        {!verified && <View style={styles.row}>
+          
             <View style={{width:'70%'}}>
+
           <InputFieldReusable
                         placeholder="Email OTP (6 digits)"
-                        //  value={email}
-                        //  onChangeText={setEmail}
+                         value={otp}
+                         onChangeText={(txt)=>onOtpChange(txt)}
                         
                         />
           </View>
@@ -49,14 +60,19 @@ const OtpSection = ({
             onPress={onVerifyOtp}
           />
           </View>
+        </View>}
+        <View style={{width:'100%'}}><Text></Text></View>
+       
         </View>
       )}
     </View>
+    
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    width:'100%'
     // marginTop: hp(2),
   },
   row: {

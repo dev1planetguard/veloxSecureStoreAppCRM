@@ -55,6 +55,7 @@ const Stack = createNativeStackNavigator();
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="SplashScreen" component={AuthStack} />
         <Stack.Screen name="SalesDashboard" component={SalesDrawer} />
+        <Stack.Screen name="AdminDashboard" component={AdminDrawer} />
       </Stack.Navigator>
     </NavigationContainer>
     )

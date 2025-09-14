@@ -5,6 +5,7 @@ const apiMethods = {
   get: async (url, params) => {
     const res = await api.get(url, { params });
     return res.data;
+    
   },
 
   post: async (url, data) => {

@@ -45,7 +45,13 @@ export default function SalesDrawer() {
 
   return (
     <Drawer.Navigator>
-      <Drawer.Screen name="SalesDashboard" component={SalesDashboard} />
+      <Drawer.Screen options={{
+      title: 'Sales Overview', // Displayed title in the header
+      headerStyle: {
+        backgroundColor: '#000', // Change header background color
+      },
+      headerTintColor: '#ffffff', // Change header text color
+    }}  name="SalesDashboard" component={SalesDashboard} />
     </Drawer.Navigator>
   );
 }

@@ -92,3 +92,22 @@ export const submitDailyLogin = async (formattedDateTime, geoloc, id, img,header
     throw error;
   }
 };
+
+export const fetchUserRoles = async () => {
+  try {
+    const json = await apiMethods.get('/getUserRoleListing');
+
+    if (json.statusCode === 200 && Array.isArray(json.data)) {
+      const opts = json.data.map(roleName => ({ label: roleName, value: roleName }));
+      console.log('opts', opts);
+      return opts;
+    } else {
+      Alert.alert('Error', 'Unexpected response from server');
+      return [];
+    }
+  } catch (error) {
+    console.error('Error fetching user roles:', error);
+    Alert.alert('Error', 'Unable to fetch roles');
+    return [];
+  }
+};
