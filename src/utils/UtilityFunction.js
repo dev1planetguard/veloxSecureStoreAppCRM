@@ -129,3 +129,9 @@ export const getAddressFromCoords = async (latitude, longitude) => {
 };
 
 
+export const splitDateTime = (dateTimeString) => {
+  const [date, time] = dateTimeString.split(' ');
+  return { date, time };
+};
+
+

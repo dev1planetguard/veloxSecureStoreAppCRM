@@ -9,10 +9,10 @@
 // }
 
 import 'react-native-reanimated';
-import {  StyleSheet, View,Text, SafeAreaView, StatusBar, } from 'react-native';
+import {  StyleSheet, View,Text, StatusBar, Platform, UIManager, } from 'react-native';
 import LoginScreen from './src/screen/login/Login';
 import SplashScreen from './src/screen/SplashScreen'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { hp, wp } from './src/utils/responsive';
 import ButtonReusable from './src/components/reusable/ButtonReusable';
 import InputFieldReusable from './src/components/reusable/InputFieldResuable';
@@ -22,11 +22,21 @@ import PrivacyPolicyCardReusable from './src/components/reusable/PrivacyPolicyCa
 // import { NavigationContainer } from '@react-navigation/native';
 // import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import RootNavigator from './src/navigation/RootNavigator';
+import { SafeAreaView } from 'react-native-safe-area-context';
 // const Stack = createNativeStackNavigator();
 function App() {
   const [street, setStreet] = useState('');//for inputfield
   const [firstName, setFirstName] = useState('');//for halfinput
-  return (<RootNavigator />);
+
+   useEffect(() => {
+    if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+      UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
+  }, []);
+
+  return (<SafeAreaView style={{flex:1,backgroundColor:'#000'}}>
+  <RootNavigator />
+  </SafeAreaView>);
 //     <NavigationContainer>
 //        <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
 //      {/* <SafeAreaView style={styles.container}>  */}

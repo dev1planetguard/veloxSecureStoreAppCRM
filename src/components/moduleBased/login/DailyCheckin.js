@@ -120,6 +120,7 @@ export default function DailyCheckIn({ header, header2, button, onComplete }) {
       if (header === 'Daily Check-Out') {
         await AsyncStorage.setItem('IS_DAILY_CHECKIN', 'false');
         await AsyncStorage.removeItem('jwtToken');
+        onComplete()
         // navigation.replace('Login');
       } else {
         await AsyncStorage.setItem('IS_DAILY_CHECKIN', 'true');

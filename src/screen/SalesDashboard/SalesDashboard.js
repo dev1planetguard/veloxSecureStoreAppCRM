@@ -3,10 +3,14 @@ import React, { useLayoutEffect, useState } from 'react'
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import DailyCheckIn from '../components/moduleBased/login/DailyCheckin';
+import DailyCheckIn from '../../components/moduleBased/login/DailyCheckin';
+import TabBar from '../../components/reusable/TabBar';
+import WalkinHistory from './WalkinHistory';
 
 const SalesDashboard = () => {
   const [hasCheckedInToday,setHasCheckedInToday]= useState()
+  const [activeTab, setActiveTab] = useState(0);
+  const tabs = ['Schedule meetings','Walkin-In'];
 
 
     const navigation = useNavigation();
@@ -29,10 +33,29 @@ if (hasCheckedInToday=='false') {
     />)
    }
 
+
+     const renderTabContent = (index) => {
+    switch(activeTab) {
+      case 0:
+        return <Text style={{color:'white'}}>Welcome to Home</Text>;
+      case 1:
+        return <WalkinHistory/>;
+      case 2:
+        return <Text style={styles.text}>Adjust your Settings</Text>;
+      default:
+        return <Text style={styles.text}>Unknown Tab</Text>;
+    }
+  };
+
   return (
     <View style={{flex:1,backgroundColor:'#000'}}>
-      <Text>Sales Dashboarddddd</Text>
-   
+       <TabBar
+        tabs={tabs} 
+        activeIndex={activeTab} 
+        onTabPress={setActiveTab} 
+      />
+{renderTabContent()}
+
     </View>
   )
 }

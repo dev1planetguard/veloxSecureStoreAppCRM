@@ -78,14 +78,15 @@ export const submitDailyLogin = async (formattedDateTime, geoloc, id, img,header
       type: 'image/jpeg',
       name: 'selfie.jpg',
     });
-        if (header === "Daily Check-Out") {
-      await AsyncStorage.clear();
-    }
+       
 
     console.log('Submitting Daily Login:', apiUrl, formData);
 
     const res = await apiMethods.post(apiUrl, formData);
     console.log('Daily Login Response:', res.data);
+     if (header === "Daily Check-Out") {
+      await AsyncStorage.clear();
+    }
     return res;
   } catch (error) {
     console.error('Daily Login API Error:', error.response ? error.response.data : error.message);
