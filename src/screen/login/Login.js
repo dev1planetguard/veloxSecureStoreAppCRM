@@ -81,7 +81,7 @@ function LoginScreen() {
                 } else if (roleType === "Admin") {
                     navigation.reset({
                         index: 0,
-                        routes: [{ name: "AdminDashboard" }],
+                        routes: [{ name: "AdminDrawer" }],
                     });
                 } else {
                     navigation.reset({

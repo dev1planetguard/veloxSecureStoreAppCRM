@@ -1,9 +1,11 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import SalesDashboard from '../../screen/SalesDashboard';
+import SalesRepDashboard from '../../screen/SalesRepDashboard';
 import DailyCheckIn from '../../components/moduleBased/login/DailyCheckin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator, View } from 'react-native';
+import CustomDrawerContent from './CustomDrawerContent';
 
 const Drawer = createDrawerNavigator();
 
@@ -44,8 +46,13 @@ export default function SalesDrawer() {
   }
 
   return (
-    <Drawer.Navigator>
+    <Drawer.Navigator drawerContent={(props) => <CustomDrawerContent {...props} />}>
       <Drawer.Screen name="SalesDashboard" component={SalesDashboard} />
+      <Drawer.Screen
+        name="SalesRepDashboard"
+        component={SalesRepDashboard}
+        options={{ headerShown: false }}
+      />
     </Drawer.Navigator>
   );
 }

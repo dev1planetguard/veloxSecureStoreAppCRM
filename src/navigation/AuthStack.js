@@ -5,6 +5,7 @@ import React from 'react'
 import LoginScreen from '../screen/login/Login';
 import SplashScreen from '../screen/SplashScreen';
 import { CreateAccount } from '../screen/login/CreateAccount';
+import ForgotPasswordScreen from '../screen/ForgetPasswordScreen';
 // import CreateAccount  from '../screen/login/CreateAccount';
 const Stack = createNativeStackNavigator();
 const AuthStack = () => {
@@ -17,6 +18,7 @@ const AuthStack = () => {
     />
       <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Register" component={CreateAccount} options={{ headerShown: false }} />
+      <Stack.Screen name="ForgotPasswordScreen" component={ForgotPasswordScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   )
 }

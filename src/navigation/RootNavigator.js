@@ -37,26 +37,15 @@ const RootNavigator = () => {
             </View>
         );
     }
-const Stack = createNativeStackNavigator();
     return (
-        // <NavigationContainer>
-        //     {roleType === 'Admin' ? (
-        //         <AdminDrawer />
-        //     ) : roleType === 'Sales' ? (
-        //         <SalesDrawer />
-        //         // <SplashScreen/>
-        //     )  : (
-        //         <AuthStack />
-        //     )}
-        // </NavigationContainer>
-
-
- <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="SplashScreen" component={AuthStack} />
-        <Stack.Screen name="SalesDashboard" component={SalesDrawer} />
-      </Stack.Navigator>
-    </NavigationContainer>
+        <NavigationContainer>
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="SplashScreen" component={SplashScreen} />
+                <Stack.Screen name="Login" component={AuthStack} />
+                <Stack.Screen name="AdminDrawer" component={AdminDrawer} />
+                <Stack.Screen name="SalesDashboard" component={SalesDrawer} />
+            </Stack.Navigator>
+        </NavigationContainer>
     )
 }
 
