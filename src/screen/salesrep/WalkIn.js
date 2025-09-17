@@ -17,9 +17,13 @@ import {
 } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import { API_BASE_URL } from '../../config/config';
+import { launchCamera } from 'react-native-image-picker';
 
-const PRODUCT_API = `${API_BASE_URL}/product/productNames`;
 const STAGE_API = `${API_BASE_URL}/saleStage/getSaleStageListing`;
+const STATIC_PRODUCTS = [
+  { label: 'PlanetGuard UESM', value: 'PlanetGuard UESM' },
+
+];
 
 export default function WalkIn() {
   const [step, setStep] = useState('start');
@@ -46,20 +50,9 @@ export default function WalkIn() {
       try {
         const token = await AsyncStorage.getItem('jwtToken');
 
-        // Fetch products
+        // Set static products instead of fetching from API
         setProductLoading(true);
-        try {
-          const res = await fetch(PRODUCT_API, {
-            method: 'GET',
-            headers: { Authorization: token ? `Bearer ${token}` : '' },
-          });
-          const json = await res.json();
-          setProductNames(
-            (json.data || []).map(p => ({ label: p, value: p }))
-          );
-        } catch {
-          setProductNames([]);
-        }
+        setProductNames(STATIC_PRODUCTS);
         setProductLoading(false);
 
         // Fetch stages
@@ -85,11 +78,49 @@ export default function WalkIn() {
 
   const start = () => setStep('selfie');
 
-  // ✅ Skipped selfie — just simulates capturing
-  const takeSelfie = () => {
-    setSelfieUri('dummy_selfie.jpg');
-    Alert.alert('Selfie Captured', 'Proceeding to onboarding form.');
-    setStep('onboarding');
+  const requestCameraPermission = async () => {
+    if (Platform.OS === 'android') {
+      const result = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA
+      );
+      return result === PermissionsAndroid.RESULTS.GRANTED;
+    }
+    return true;
+  };
+
+  const takeSelfie = async () => {
+    const hasPermission = await requestCameraPermission();
+    if (!hasPermission) {
+      Alert.alert('Permission Denied', 'Camera permission is required to take a selfie.');
+      return;
+    }
+
+    launchCamera(
+      {
+        mediaType: 'photo',
+        cameraType: 'front',
+        saveToPhotos: false,
+        includeBase64: false,
+        quality: 0.8,
+      },
+      (response) => {
+        if (response.didCancel) {
+          return;
+        }
+        if (response.errorCode) {
+          Alert.alert('Camera Error', response.errorMessage || response.errorCode);
+          return;
+        }
+        const uri = response?.assets?.[0]?.uri;
+        if (uri) {
+          setSelfieUri(uri);
+          Alert.alert('Selfie Captured', 'Proceeding to onboarding form.');
+          setStep('onboarding');
+        } else {
+          Alert.alert('Error', 'Could not capture image. Please try again.');
+        }
+      }
+    );
   };
 
   const askLocation = async () => {
@@ -249,9 +280,9 @@ export default function WalkIn() {
         {step === 'selfie' && (
           <View style={styles.center}>
             <Text style={styles.bigTitle}>Take Selfie</Text>
-            <Text style={styles.subtitle}>Front camera only (skipped)</Text>
+            <Text style={styles.subtitle}>Use your front camera to capture a selfie</Text>
             <TouchableOpacity style={styles.primaryButton} onPress={takeSelfie}>
-              <Text style={styles.primaryBtnText}>Proceed</Text>
+              <Text style={styles.primaryBtnText}>Capture Selfie</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -314,7 +345,7 @@ export default function WalkIn() {
                     setData({ ...data, productName: v });
                     setValidationErrors(prev => ({ ...prev, productName: '' }));
                   }}
-                  items={productNames.length > 0 ? productNames : [{ label: 'PlanetGuard UESM', value: 'PlanetGuard UESM' }]}
+                  items={productNames.length > 0 ? productNames : STATIC_PRODUCTS}
                   placeholder={{ label: 'Select Product', value: '' }}
                   style={pickerStyles}
                   useNativeAndroidPickerStyle={false}
