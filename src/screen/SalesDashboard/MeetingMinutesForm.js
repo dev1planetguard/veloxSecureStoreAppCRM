@@ -754,7 +754,7 @@ setForm(prev => ({ ...prev, ['licenseType']: 'Free Trial' }));
               }
              
               {/* <RNPickerSelect
-                onValueChange={v => handleChange('licenseType', v)}
+                onValueChange={v => handleChange('l--icenseType', v)}
                 items={licenseTypes}
                 value={form.licenseType}
                 placeholder={{ label: 'Select license type', value: '' }}

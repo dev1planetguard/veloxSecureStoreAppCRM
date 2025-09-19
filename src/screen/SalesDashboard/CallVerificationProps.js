@@ -205,9 +205,10 @@ console.log('appp state 1 ',appState.current);
     }
   };
 
-  if(true){
-    return (<MeetingMinutesForm/>)
+  if(callInitiated){
+    return (<MeetingMinutesForm onClose={setCallInitiated}/>)
   }
+  
   return (
     <KeyboardAvoidingView
       style={styles.flex}
