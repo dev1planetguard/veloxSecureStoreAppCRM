@@ -24,7 +24,6 @@ const res = await getWalkinHistory(id)
       console.log('Error reading AsyncStorage:', e);
     }
   };
-
   getHistory()
 },[])
 

@@ -277,8 +277,8 @@ export const CreateAccount = () => {
                         />
                         <InputFieldReusable
                             placeholder="Alt Mobile umber (optional)"
-                            value={lname}
-                            onChangeText={setLname}
+                            value={altMobile}
+                            onChangeText={setAltMobile}
                         />
                         <PassCodeInputField onChangePass={setPassword} placeholder={'password'} />
                         <PassCodeInputField onChangePass={setConfirmPassword} placeholder={'Confirm password'} />

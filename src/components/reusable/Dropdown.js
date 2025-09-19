@@ -101,6 +101,7 @@ const styles = StyleSheet.create({
     color: '#aaa',
   },
   dropdownListContainer: {
+    zIndex:10,
     backgroundColor: '#333',
     borderRadius: 8,
     marginTop: hp(5),

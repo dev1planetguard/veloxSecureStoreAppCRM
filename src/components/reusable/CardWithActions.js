@@ -51,25 +51,28 @@ const result = splitDateTime(date)
 
       {/* Visit Information */}
       <View style={styles.row}>
-        <Feather name="map-pin" size={14} color="#FFA500" />
+        <Feather name="map-pin" size={14} 
+        // color="#FFA500"
+        color='#2563eb'
+         />
         <Text style={styles.info}>{address}</Text>
       </View>
       <View style={styles.row}>
-        <Feather name="calendar" size={14} color="#FFA500" />
+        <Feather name="calendar" size={14} color='#2563eb' />
         <Text style={styles.info}>{result.date}</Text>
       </View>
       <View style={styles.row}>
-        <Feather name="clock" size={14} color="#FFA500" />
+        <Feather name="clock" size={14} color='#2563eb' />
         <Text style={styles.info}>{result.time}</Text>
       </View>
 
       {/* Contact Person */}
       <View style={styles.row}>
-        <Feather name="user" size={14} color="#FFA500" />
+        <Feather name="user" size={14} color='#2563eb' />
         <Text style={styles.info}>{contactPerson}</Text>
       </View>
       <View style={styles.row}>
-        <Feather name="mail" size={14} color="#FFA500" />
+        <Feather name="mail" size={14} color='#2563eb'/>
         <Text style={styles.info}>{contactPersonmail}</Text>
       </View>
       <Animated.View style={[styles.animatedContainer, { height: animatedHeight }]}>

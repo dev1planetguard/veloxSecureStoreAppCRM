@@ -27,11 +27,11 @@ useLayoutEffect(() => {
   checkDailyCheckin();
 }, []);
 
-if (hasCheckedInToday=='false') {
-     return (<DailyCheckIn header={'Daily Check-In'} header2={'Complete your daily check-in to access the dashboard'} 
-    // onComplete={handleCheckInComplete} 
-    />)
-   }
+// if (hasCheckedInToday=='false') {
+//      return (<DailyCheckIn header={'Daily Check-In'} header2={'Complete your daily check-in to access the dashboard'} 
+//     // onComplete={handleCheckInComplete} 
+//     />)
+//    }
 
 
      const renderTabContent = (index) => {

@@ -7,6 +7,8 @@ import { ActivityIndicator, View } from 'react-native';
 import CustomDrawer from '../../components/reusable/CustomAppDrawer';
 import { useNavigation } from '@react-navigation/native';
 import { getUserDetails } from '../../api/apiFunctions/User_Sales_exe/UserDetails';
+import Profile from '../../screen/SalesDashboard/Profile';
+import SalesRepDashboard from '../../screen/SalesDashboard/SalesCallAndWalkin';
 
 const Drawer = createDrawerNavigator();
 
@@ -75,7 +77,7 @@ const navigation = useNavigation()
         headerStyle: { backgroundColor: '#000' },
         headerTintColor: '#fff',
         drawerStyle: { backgroundColor: '#1A1A1A' }, // Dark theme for drawer
-        drawerActiveTintColor: '#FFA500', // Active item color
+        drawerActiveTintColor: '#2563eb', // Active item color
         drawerInactiveTintColor: '#ccc', // Inactive item color
       }}
     >
@@ -86,6 +88,12 @@ const navigation = useNavigation()
       },
       headerTintColor: '#ffffff', // Change header text color
     }}  name="SalesDashboard" component={SalesDashboard} />
+    <Drawer.Screen options={{
+      headerShown:false
+   }}  name='Profile' component={Profile} />
+   <Drawer.Screen options={{
+      headerShown:false
+   }} name='SalesRepDash' component={SalesRepDashboard}/>
     </Drawer.Navigator>
   );
 }

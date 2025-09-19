@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     
   },
   tabItem: {
-    backgroundColor: '#FFA500',
+    backgroundColor: '#2563eb',
     paddingVertical: 8,
     paddingHorizontal: 14,
     borderRadius: 20,
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     
   },
   tabText: {
-    color: '#000',
+    color: '#ffff',
     fontSize: 12,
     fontWeight: '500',
   },
