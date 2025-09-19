@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
-import { API_BASE_URL } from '../configurl';
+import { API_BASE_URL } from '../config/config';
 
 export default function ForgotPasswordScreen() {
   const navigation = useNavigation();
@@ -30,9 +30,14 @@ export default function ForgotPasswordScreen() {
   const sendOtp = async () => {
     if (!email.trim()) return Alert.alert('Error', 'Please enter your email');
     try {
-      const res = await fetch(`${API_BASE_URL}/otp/getOtp?email=${encodeURIComponent(email)}`, { method: 'POST' });
-      const data = await res.json();
-      if (data.statusCode === 200) {
+      const url = `${API_BASE_URL}/otp/getOtp?email=${encodeURIComponent(email)}`;
+      console.log('[ForgotPassword] sendOtp →', url);
+      const res = await fetch(url, { method: 'POST' });
+      const text = await res.text();
+      console.log('[ForgotPassword] sendOtp status:', res.status, 'body:', text);
+      let data;
+      try { data = JSON.parse(text); } catch { data = { statusCode: res.ok ? 200 : 500, message: text }; }
+      if (res.ok || data.statusCode === 200) {
         setOtpSent(true);
         Alert.alert('OTP Sent', 'Check your email for the code');
       } else {
@@ -46,9 +51,14 @@ export default function ForgotPasswordScreen() {
   const verifyOtp = async () => {
     if (!otp.trim()) return Alert.alert('Error', 'Please enter the OTP');
     try {
-      const res = await fetch(`${API_BASE_URL}/otp/verifyEmail?mail=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}`, { method: 'POST' });
-      const data = await res.json();
-      if (data.statusCode === 200) {
+      const url = `${API_BASE_URL}/otp/verifyEmail?mail=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}`;
+      console.log('[ForgotPassword] verifyOtp →', url);
+      const res = await fetch(url, { method: 'POST' });
+      const text = await res.text();
+      console.log('[ForgotPassword] verifyOtp status:', res.status, 'body:', text);
+      let data;
+      try { data = JSON.parse(text); } catch { data = { statusCode: res.ok ? 200 : 500, message: text }; }
+      if (res.ok || data.statusCode === 200) {
         setOtpVerified(true);
         Alert.alert('Verified', 'OTP verification successful');
       } else {
@@ -63,17 +73,33 @@ export default function ForgotPasswordScreen() {
     if (!newPassword || !confirmPassword) return Alert.alert('Error', 'Please fill in all fields');
     if (newPassword !== confirmPassword) return Alert.alert('Error', 'Passwords do not match');
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/resetPassword`, {
+      // Attempt 1: JSON body (email, otp, newPassword)
+      const url = `${API_BASE_URL}/resetPassword`;
+      console.log('[ForgotPassword] resetPassword →', url);
+      let res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp, newPassword }),
       });
-      const data = await res.json();
-      if (data.statusCode === 200) {
-        Alert.alert('Success', 'Password reset successful', [{ text: 'OK', onPress: () => navigation.navigate('Login') }]);
-      } else {
-        Alert.alert('Error', data.message || 'Failed to reset password');
+      let text = await res.text();
+      console.log('[ForgotPassword] resetPassword status (json):', res.status, 'body:', text);
+      let data; try { data = JSON.parse(text); } catch { data = { statusCode: res.ok ? 200 : 500, message: text }; }
+      if (res.ok || data.statusCode === 200) {
+        return Alert.alert('Success', 'Password reset successful', [{ text: 'OK', onPress: () => navigation.navigate('Login') }]);
       }
+
+      // Attempt 2: Query params (mail, otp, password), POST without body
+      const urlWithQuery = `${API_BASE_URL}/resetPassword?mail=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}&password=${encodeURIComponent(newPassword)}`;
+      console.log('[ForgotPassword] resetPassword (query) →', urlWithQuery);
+      res = await fetch(urlWithQuery, { method: 'POST' });
+      text = await res.text();
+      console.log('[ForgotPassword] resetPassword status (query):', res.status, 'body:', text);
+      try { data = JSON.parse(text); } catch { data = { statusCode: res.ok ? 200 : 500, message: text }; }
+      if (res.ok || data.statusCode === 200) {
+        return Alert.alert('Success', 'Password reset successful', [{ text: 'OK', onPress: () => navigation.navigate('Login') }]);
+      }
+
+      Alert.alert('Error', data.message || 'Failed to reset password');
     } catch (err) {
       Alert.alert('Network Error', err.message);
     }
