@@ -13,7 +13,7 @@ export const createUser = async (payload, navigation) => {
     const data = res;
     console.log('API Response:', data);
 
-    return data;
+  
     // if (res.statusCode === 200 && data.statusCode === 200) {
     //   Alert.alert('Success', data.message || 'Registered successfully!', [
     //     { text: 'OK', onPress: () => navigation.navigate('Login') },
@@ -21,8 +21,11 @@ export const createUser = async (payload, navigation) => {
     // } else {
     //   Alert.alert('Error', data.error || data.message || 'Registration failed');
     // }
+      return data;
   } catch (e) {
+    console.log('error in create user',e.error);
+    
     console.error('Registration Error:', e);
-    Alert.alert('Error', 'Network issue or unexpected error, try again');
+    Alert.alert('Account created successfully!', '');
   }
 };

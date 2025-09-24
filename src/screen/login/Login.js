@@ -115,7 +115,8 @@ function LoginScreen() {
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
             >
-                <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+                {/* <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled"> */}
+                <View style={styles.container}>
                     <View style={styles.logoContainer}>
                         <Image
                             source={require('../../../assets/icons/veloxlogo-latest.png')}
@@ -160,7 +161,8 @@ function LoginScreen() {
                         </TouchableOpacity>
                     </View>
                     <Footer />
-                </ScrollView>
+                    </View>
+                {/* </ScrollView> */}
             </KeyboardAvoidingView>
         </SafeAreaView>
     );

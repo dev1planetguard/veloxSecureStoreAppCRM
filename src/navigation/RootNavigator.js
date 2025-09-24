@@ -37,7 +37,6 @@ const RootNavigator = () => {
             </View>
         );
     }
-const Stack = createNativeStackNavigator();
     return (
         // <NavigationContainer>
         //     {roleType === 'Admin' ? (

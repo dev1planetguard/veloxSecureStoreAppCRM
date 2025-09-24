@@ -23,6 +23,9 @@ import PrivacyPolicyCardReusable from './src/components/reusable/PrivacyPolicyCa
 // import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import RootNavigator from './src/navigation/RootNavigator';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import LocationService from './src/service/LocationService';
+import ToastMessage ,{ showToast } from './src/components/reusable/Toast';
+
 // const Stack = createNativeStackNavigator();
 function App() {
   const [street, setStreet] = useState('');//for inputfield
@@ -34,9 +37,13 @@ function App() {
     }
   }, []);
 
-  return (<SafeAreaView style={{flex:1,backgroundColor:'#000'}}>
+  return (
+  <View style={{flex:1}}>
+    {/* <LocationService />  */}
+      <ToastMessage />
   <RootNavigator />
-  </SafeAreaView>);
+  </View>
+  );
 //     <NavigationContainer>
 //        <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
 //      {/* <SafeAreaView style={styles.container}>  */}

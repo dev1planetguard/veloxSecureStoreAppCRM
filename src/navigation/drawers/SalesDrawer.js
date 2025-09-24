@@ -9,6 +9,13 @@ import { useNavigation } from '@react-navigation/native';
 import { getUserDetails } from '../../api/apiFunctions/User_Sales_exe/UserDetails';
 import Profile from '../../screen/SalesDashboard/Profile';
 import SalesRepDashboard from '../../screen/SalesDashboard/SalesCallAndWalkin';
+// import SalesDashboard from '../../screen/SalesDashboard';
+// import SalesRepDashboard from '../../screen/SalesRepDashboard';
+// import DailyCheckIn from '../../components/moduleBased/login/DailyCheckin';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
+// import { ActivityIndicator, View } from 'react-native';
+import CustomDrawerContent from './CustomDrawerContent';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Drawer = createDrawerNavigator();
 
@@ -71,12 +78,13 @@ const navigation = useNavigation()
  
 
   return (
+    
      <Drawer.Navigator
       drawerContent={(props) => <CustomDrawer details={userDetails.data} onpress={()=>setHasCheckedOutToday(true)} {...props} />}
       screenOptions={{
         headerStyle: { backgroundColor: '#000' },
         headerTintColor: '#fff',
-        drawerStyle: { backgroundColor: '#1A1A1A' }, // Dark theme for drawer
+        drawerStyle: { backgroundColor: '#0f172a' }, // Dark theme for drawer
         drawerActiveTintColor: '#2563eb', // Active item color
         drawerInactiveTintColor: '#ccc', // Inactive item color
       }}
@@ -84,7 +92,7 @@ const navigation = useNavigation()
       <Drawer.Screen options={{
       title: 'Sales Overview', // Displayed title in the header
       headerStyle: {
-        backgroundColor: '#000', // Change header background color
+        backgroundColor: '#0f172a', // Change header background color
       },
       headerTintColor: '#ffffff', // Change header text color
     }}  name="SalesDashboard" component={SalesDashboard} />
@@ -92,8 +100,10 @@ const navigation = useNavigation()
       headerShown:false
    }}  name='Profile' component={Profile} />
    <Drawer.Screen options={{
+    title:'Engagements',
       headerShown:false
    }} name='SalesRepDash' component={SalesRepDashboard}/>
     </Drawer.Navigator>
+
   );
 }

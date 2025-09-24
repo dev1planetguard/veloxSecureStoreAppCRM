@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
 export const API_BASE_URL = "http://192.168.0.204:9191/api/v1";
+// export const API_BASE_URL = 'http://45.118.160.135:9192/api/v1'; //public 
 
 // Create axios instance
 const api = axios.create({
@@ -23,7 +24,7 @@ api.interceptors.request.use(
     // }
     console.log('config urlllllll----',config.url);
     
-    if (config.url !== "/login") {  // exclude only "/login"
+    if (config.url !== "/login" || config.url !== '/createUser') {  // exclude only "/login"
       const token = await AsyncStorage.getItem("jwtToken");
       console.log('in axios interceptor', token);
       config.headers.Authorization = `Bearer ${token}`;

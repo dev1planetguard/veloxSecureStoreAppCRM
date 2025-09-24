@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1A1A1A',
-    // paddingVertical:hp(3)
+    paddingVertical:hp(5)
   },
   profileSection: {
     backgroundColor: '#333',

@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 // Import local logo asset
 const Logo = require('../../../assets/icons/veloxlogo-latest.png');
 
+
 const PrivacyPolicy = ({navigation}) => {
   return (
      <SafeAreaView style={styles.safe}>

@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { hp, responsiveFontSize, wp } from '../../utils/responsive';
 
 const TabBar = ({ tabs, activeIndex, onTabPress }) => {
   return (
     <View style={styles.container}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+      {/* <ScrollView horizontal showsHorizontalScrollIndicator={false}> */}
         {tabs.map((tab, index) => (
           <TouchableOpacity
             key={index}
@@ -16,7 +17,7 @@ const TabBar = ({ tabs, activeIndex, onTabPress }) => {
             </Text>
           </TouchableOpacity>
         ))}
-      </ScrollView>
+      {/* </ScrollView> */}
     </View>
   );
 };
@@ -27,22 +28,30 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     // backgroundColor: '#1E1E1E',
-    paddingVertical: 8,
-    paddingHorizontal: 10,
+    // paddingVertical: hp(1),
+    // paddingHorizontal: wp(4),
+    // bottom:hp(0.5),
+  justifyContent:'space-evenly'
+
+    
+
   },
   tabItem: {
-    paddingVertical: 6,
-    paddingHorizontal: 16,
+    paddingVertical: hp(0.9),
+    // paddingHorizontal: wp(2),
     borderRadius: 20,
-    marginRight: 10,
-    backgroundColor: '#2A2A2A',
+    // marginRight: 10,
+    backgroundColor: '#4C4C4C',
+    width:wp(45),
+    alignItems:'center',
+    justifyContent:'center'
   },
   activeTab: {
     backgroundColor: '#2563eb',
   },
   tabText: {
-    fontSize: 14,
-    color: '#aaa',
+    fontSize: responsiveFontSize(11),
+    color: '#fff',
   },
   activeText: {
     color: '#fff',

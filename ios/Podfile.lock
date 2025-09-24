@@ -1,5 +1,4 @@
 PODS:
-  - BEMCheckBox (1.4.1)
   - boost (1.84.0)
   - DoubleConversion (1.1.6)
   - fast_float (6.1.4)
@@ -1239,6 +1238,8 @@ PODS:
     - React-jsiexecutor
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
+  - react-native-background-actions (4.0.1):
+    - React-Core
   - react-native-contacts (8.0.7):
     - DoubleConversion
     - glog
@@ -1658,9 +1659,6 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNCCheckbox (0.5.20):
-    - BEMCheckBox (~> 1.4)
-    - React-Core
   - RNGestureHandler (2.28.0):
     - DoubleConversion
     - glog
@@ -1958,6 +1956,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
+  - react-native-background-actions (from `../node_modules/react-native-background-actions`)
   - react-native-contacts (from `../node_modules/react-native-contacts`)
   - react-native-geolocation-service (from `../node_modules/react-native-geolocation-service`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
@@ -1992,7 +1991,6 @@ DEPENDENCIES:
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
-  - "RNCCheckbox (from `../node_modules/@react-native-community/checkbox`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
@@ -2002,7 +2000,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - BEMCheckBox
     - SocketRocket
     - TOCropViewController
 
@@ -2082,6 +2079,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   React-microtasksnativemodule:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
+  react-native-background-actions:
+    :path: "../node_modules/react-native-background-actions"
   react-native-contacts:
     :path: "../node_modules/react-native-contacts"
   react-native-geolocation-service:
@@ -2150,8 +2149,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
-  RNCCheckbox:
-    :path: "../node_modules/@react-native-community/checkbox"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
   RNImageCropPicker:
@@ -2166,7 +2163,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  BEMCheckBox: 5ba6e37ade3d3657b36caecc35c8b75c6c2b1a4e
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
@@ -2204,6 +2200,7 @@ SPEC CHECKSUMS:
   React-logger: e6c3c1b55c18cc1b945b647ff9ada53e0e710b50
   React-Mapbuffer: 396d97d3534fa0df8c1a690eb6269d8a7d9f5b0e
   React-microtasksnativemodule: 9f9819152d22361967a6dfaaca7828af37b0ae70
+  react-native-background-actions: ea5bab231a28710eea614acb9ca595594415a5ec
   react-native-contacts: c538548ac3c5d313c4963c46f1e12b256905e981
   react-native-geolocation-service: 608e1da71a1ac31b4de64d9ef2815f697978c55b
   react-native-image-picker: fb2d12cb86e0b3e58caee9aa660ddbd5742c841c
@@ -2238,7 +2235,6 @@ SPEC CHECKSUMS:
   ReactCodegen: 8e673528b686d334cfa785515d9c9b14bcb272d8
   ReactCommon: 7ea8ee50e489e9cc75922f19a06ea45c1b59b4bd
   RNCAsyncStorage: efa02b644121f4e1f7f33e712f4f82c30aa4ff4a
-  RNCCheckbox: 471ebdc33884c084f362615c1ef3507496cc07f1
   RNGestureHandler: ab7287c9593b75911be221b6c97d7ae6e02652e6
   RNImageCropPicker: 24d000ef063f9867e98e68585ff947b55fab15c7
   RNReanimated: 72d715c899d2809c1416cdaabc3681bd6476af19

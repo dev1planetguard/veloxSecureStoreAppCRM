@@ -64,10 +64,21 @@
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>This app needs permission to save your photo.</string>
 	<key>NSContactsUsageDescription</key>
-	<string>This app needs contacts list to , add the contact to their toon call customers.</string>
+	<string>This app needs contacts list to , add the contact to their on call customers.</string>
   <key>UIAppFonts</key>
   <array>
     <string>Feather.ttf</string>
+  </array>
+  <key>NSLocationWhenInUseUsageDescription</key>
+  <string>This app requires location while using the app.</string>
+  <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+  <string>This app requires location even in the background.</string>
+  <key>NSLocationAlwaysUsageDescription</key>
+  <string>This app requires location access always.</string>
+  <key>UIBackgroundModes</key>
+  <array>
+    <string>location</string>
+    <string>fetch</string>
   </array>
 </dict>
 </plist>

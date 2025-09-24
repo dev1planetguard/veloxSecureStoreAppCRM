@@ -15,6 +15,7 @@ import { fetchUserRoles } from "../../api/apiFunctions/Login/Login_api_function"
 import { isStrongPassword } from "../../utils/UtilityFunction";
 import { createUser } from "../../api/apiFunctions/Login/Create_Account_api_function";
 import { genderOptions } from "../../constants/Strings";
+import { showToast } from "../../components/reusable/Toast";
 
 export const CreateAccount = () => {
     const navigation = useNavigation()
@@ -50,14 +51,20 @@ export const CreateAccount = () => {
     const [altMobile, setAltMobile] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
+    const[loading,setLoading]=useState(false)
 
-    useEffect(() => {
-        const states = State.getStatesOfCountry('IN');
-        setStateOptions(states.map(s => ({ label: s.name, value: s.isoCode })));
-        setStateProv('');
-        setCityOptions([]);
-        setCity('');
-    }, [countryCode]);
+ useEffect(() => {
+  let isMounted = true;
+  // let the UI render first, then calculate
+  setTimeout(() => {
+    if (isMounted) {
+      const states = State.getStatesOfCountry("IN");
+      setStateOptions(states.map(s => ({ label: s.name, value: s.isoCode })));
+    }
+  }, 0);
+
+  return () => { isMounted = false };
+}, []);
 
     // Load cities when state changes
     useEffect(() => {
@@ -131,55 +138,59 @@ export const CreateAccount = () => {
         const isValidAge = age => /^\d+$/.test(age.trim()) && parseInt(age.trim()) > 0 && parseInt(age.trim()) <= 120;
 
         if (isEmpty(fname) || isEmpty(lname)) {
-            return Alert.alert('Error', 'Enter first and last name');
+            return showToast("Enter first and last name",1000);
+            
         }
 
         if (!emailVerified || !mobileVerified) {
-            return Alert.alert('Error', 'Verify email and mobile OTP');
+            return showToast("Verify email and mobile OTP",1000)
+            
         }
 
         if (altMobile.trim() && !isValidMobile(altMobile)) {
-            return Alert.alert('Error', 'Alternate mobile must be 10 digits');
+            return showToast("Alternate mobile must be 10 digits",1000)
         }
 
         if (!isStrongPassword(password)) {
-            return Alert.alert('Error', 'Password must be at least 8 chars, include uppercase, lowercase, number & special');
+            return showToast("Password must be at least 8 chars, include uppercase, lowercase, number & special",1000)
         }
 
         if (password !== confirmPassword) {
-            return Alert.alert('Error', 'Passwords do not match');
+            return showToast("Passwords do not match",1000)
         }
 
         if (isEmpty(street)) {
-            return Alert.alert('Error', 'Enter street address for billing');
+            return showToast("Enter street address for billing",1000)
+            
         }
 
         if (!stateProv || !city) {
-            return Alert.alert('Error', 'Select state and city for billing address');
+            return showToast("Select state and city for billing address",1000)
         }
 
         if (isEmpty(zipCode) || !isValidZip(zipCode)) {
-            return Alert.alert('Error', 'Enter a valid zip code (3-10 characters, alphanumeric, space, hyphen)');
+            return showToast("Enter a valid zip code (3-10 characters, alphanumeric, space, hyphen)",1000)
         }
 
         if (accountType === 'Individual') {
             if (isEmpty(age) || !isValidAge(age)) {
-                return Alert.alert('Error', 'Enter a valid age');
+                return showToast("Enter a valid age",1000)
             }
             if (!gender) {
-                return Alert.alert('Error', 'Select gender');
+                return showToast("Select gender",1000)
+
             }
             // if (isEmpty(designation)) {
             //   return Alert.alert('Error', 'Enter your designation');
             // }
         } else {
             if (isEmpty(orgName) || !orgRole) {
-                return Alert.alert('Error', 'Enter organization name & select role');
+                return showToast("Enter organization name & select role",1000)
             }
         }
 
         if (!termsChecked) {
-            return Alert.alert('Error', 'Accept Terms & Privacy');
+            return showToast("Accept Terms & Privacy",1000)
         }
 
         return true; // All validations passed
@@ -187,7 +198,9 @@ export const CreateAccount = () => {
 
 
     const handleCreateAccount = async () => {
+        setLoading(!loading)
         validate()
+
         const payload = {
             firstName: fname.trim(),
             lastName: lname.trim(),
@@ -208,6 +221,7 @@ export const CreateAccount = () => {
             },
         };
 
+
         if (altMobile.trim()) {
             payload.mobile.alternate = altMobile.trim();
         }
@@ -224,7 +238,12 @@ export const CreateAccount = () => {
             };
         }
         const res = await createUser(payload, navigation);
-        console.log('res from create user', res);
+        // console.log('res from create user', res);
+        if(res.statusCode==200){
+navigation.navigate('Login')
+showToast("Account created successfully!",3000);
+ setLoading(!loading)
+        }
     }
 
     return (
@@ -404,7 +423,7 @@ export const CreateAccount = () => {
                                 password !== confirmPassword ||
                                 !isStrongPassword(password)
                             }
-                        // isloading={isLoading}
+                        isloading={loading}
                         />
                     </View>
                 </ScrollView>

@@ -10,9 +10,9 @@ import {
 import ActionTabs from './ActionTabs';
 import { splitDateTime } from '../../utils/UtilityFunction';
 import Feather from '@react-native-vector-icons/feather';
-import { wp } from '../../utils/responsive';
+import { hp, responsiveFontSize, wp } from '../../utils/responsive';
 
-const CardWithActions = ({ companyName, date, time, contactPerson, contactPersonmail,productInterested,address }) => {
+const CardWithActions = ({ companyName, date, time, contactPerson, contactPersonmail,productInterested,address, handleClick }) => {
   const [expanded, setExpanded] = useState(false);
   const animation = useRef(new Animated.Value(0)).current; // initial height is 0
 console.log('data in card with actions',companyName, date, time, contactPerson);
@@ -31,7 +31,13 @@ const result = splitDateTime(date)
   };
 
   const handleAction = (action) => {
-    console.log(`${action} pressed for ${companyName}`);
+    switch (action) {
+    case 'Payment link': return handleClick(action,companyName,contactPerson,address,productInterested);
+    case 'Schedule Meet': return { backgroundColor: '#3b82f6', text: '#eff6ff' };
+    case 'Send Proposal': return { backgroundColor: '#a855f7', text: '#f5f3ff' };
+    default: return { backgroundColor: '#475569', text: '#cbd5e1' };
+  }
+    // console.log(`${action} pressed for ${companyName}`);
   };
 
   // Interpolate height from 0 to max (e.g., 60)
@@ -50,12 +56,13 @@ const result = splitDateTime(date)
       <Text style={styles.product}>{productInterested}</Text>
 
       {/* Visit Information */}
+      <View style={{flexDirection:'row',gap:wp(2),marginTop:hp(1)}}>
       <View style={styles.row}>
         <Feather name="map-pin" size={14} 
         // color="#FFA500"
         color='#2563eb'
          />
-        <Text style={styles.info}>{address}</Text>
+        <Text style={[styles.info,{maxWidth:wp(25),}]}>{address}</Text>
       </View>
       <View style={styles.row}>
         <Feather name="calendar" size={14} color='#2563eb' />
@@ -64,6 +71,7 @@ const result = splitDateTime(date)
       <View style={styles.row}>
         <Feather name="clock" size={14} color='#2563eb' />
         <Text style={styles.info}>{result.time}</Text>
+      </View>
       </View>
 
       {/* Contact Person */}
@@ -90,37 +98,41 @@ export default CardWithActions;
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#1E1E1E',
+    backgroundColor: '#1e293b',
+    // backgroundColor: '#1E1E1E',
     borderRadius: 12,
-    padding: 14,
-    marginVertical: 8,
+    padding: wp(4),
+    marginVertical: hp(1.5),
     marginHorizontal: wp(1.5),
     shadowColor: '#000',
     shadowOpacity: 0.3,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
     elevation: 3,
+    borderWidth:1,
+    borderColor:'#A9A9',
   },
    company: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: responsiveFontSize(14),
     fontWeight: 'bold',
-    marginBottom: 2,
+    marginBottom: hp(1),
   },
   product: {
     color: '#ccc',
-    fontSize: 14,
-    marginBottom: 10,
+    fontSize: responsiveFontSize(12),
+    marginBottom: hp(1.5),
   },
   row: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 6,
+    // alignItems: 'center',
+    marginBottom: hp(1),
   },
   info: {
     color: '#ddd',
-    fontSize: 12,
-    marginLeft: 6,
+    fontSize: responsiveFontSize(9),
+    marginLeft: wp(2),
+    
   },
   animatedContainer: {
     overflow: 'hidden',justifyContent:'center'

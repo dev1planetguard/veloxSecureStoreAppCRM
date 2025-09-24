@@ -8,3 +8,10 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+# Keep all classes in react-native-background-actions
+-keep class com.zoontek.rnbackgroundactions.** { *; }
+-keepclassmembers class com.zoontek.rnbackgroundactions.** { *; }
+
+# Keep any React Native modules used by the library
+-keep class com.facebook.react.bridge.** { *; }
+-keep class com.facebook.react.modules.** { *; }

@@ -2,7 +2,7 @@
 import React from 'react';
 import { DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 import { View, Alert } from 'react-native';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CustomDrawerContent(props) {
   const { navigation } = props;
@@ -17,8 +17,16 @@ export default function CustomDrawerContent(props) {
           text: "Logout",
           style: "destructive",
           onPress: async () => {
-            // Clear any auth tokens or user data
-            // await AsyncStorage.removeItem('jwtToken');
+            try {
+              await AsyncStorage.multiRemove([
+                'jwtToken',
+                'roleType',
+                'userId',
+                'IS_DAILY_CHECKIN',
+              ]);
+            } catch (e) {
+              // noop
+            }
 
             // Reset navigation and go to login
             navigation.reset({

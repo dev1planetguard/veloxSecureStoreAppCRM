@@ -1,8 +1,9 @@
 // components/CustomerListProps.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   FlatList,
   StyleSheet,
@@ -27,6 +28,8 @@ import { getOnCallCustomerList,
  } from '../../api/apiFunctions/User_Sales_exe/customerListApi';
 import { hp, wp } from '../../utils/responsive';
 import MeetingMinutesForm from './MeetingMinutesForm';
+import SkeletonList from '../../components/skeleton/Skeleton';
+import SkeletonCard from '../../components/skeleton/Skeleton';
 
 const getStatusColor = status => {
   switch (status) {
@@ -37,11 +40,13 @@ const getStatusColor = status => {
   }
 };
 
-export default function CustomerListProps({ customers, setCustomers, onCallCustomer }) {
+export default function CustomerListProps({ onCallCustomer }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
   const [payment,setPayment] = useState(false)
+  const [customers,setCustomers] = useState([])
+    const [loading, setLoading] = useState(true);
 
   // Search
   const [search, setSearch] = useState('');
@@ -62,29 +67,63 @@ export default function CustomerListProps({ customers, setCustomers, onCallCusto
     }
   }, [customers, search]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     fetchCustomers();
   }, []);
 
-  const fetchCustomers = async () => {
+  // const fetchCustomers = async () => {
+  //   try {
+  //     // Use centralized API function
+  //     const j = await getOnCallCustomerList();
+  //     if (j.statusCode === 200 && Array.isArray(j.data)) {
+  //       const mapped = j.data.map(c => {
+  //         let firstName = c.name || '';
+  //         let lastName = c.lastName || '';
+  //         if (!lastName && c.fullName) {
+  //           const parts = c.fullName.trim().split(' ');
+  //           if (parts.length > 1) lastName = parts.slice(1).join(' ');
+  //           else lastName = '';
+  //         }
+  //         let safeId = Number(c.id);
+  //         if (isNaN(safeId) || !safeId) safeId = `temp_${c.number || Math.random()}`;
+  //         return {
+  //           id: safeId,
+  //           firstName: firstName,
+  //           lastName: lastName,
+  //           phone: c.number,
+  //           address: c.address || '',
+  //           countryCode: c.countryCode || '91',
+  //           status: c.status ? c.status.toLowerCase() : '',
+  //           callHistory: c.callHistory || [],
+  //         };
+  //       });
+
+  //       setCustomers(mapped);
+  //     } else {
+  //       Alert.alert('Error', j.message || 'Failed to fetch customers');
+  //     }
+  //   } catch (e) {
+  //     Alert.alert('Error', e.message || 'Failed to fetch customer list');
+  //   }
+  // };
+   const fetchCustomers = async () => {
     try {
-      // Use centralized API function
+      setLoading(true); // ✅ start loading
       const j = await getOnCallCustomerList();
       if (j.statusCode === 200 && Array.isArray(j.data)) {
-        const mapped = j.data.map(c => {
+        const mapped = j.data.map((c) => {
           let firstName = c.name || '';
           let lastName = c.lastName || '';
           if (!lastName && c.fullName) {
             const parts = c.fullName.trim().split(' ');
             if (parts.length > 1) lastName = parts.slice(1).join(' ');
-            else lastName = '';
           }
           let safeId = Number(c.id);
           if (isNaN(safeId) || !safeId) safeId = `temp_${c.number || Math.random()}`;
           return {
             id: safeId,
-            firstName: firstName,
-            lastName: lastName,
+            firstName,
+            lastName,
             phone: c.number,
             address: c.address || '',
             countryCode: c.countryCode || '91',
@@ -98,6 +137,8 @@ export default function CustomerListProps({ customers, setCustomers, onCallCusto
       }
     } catch (e) {
       Alert.alert('Error', e.message || 'Failed to fetch customer list');
+    } finally {
+      setLoading(false); // ✅ stop loading
     }
   };
 
@@ -178,9 +219,7 @@ export default function CustomerListProps({ customers, setCustomers, onCallCusto
     const colors = getStatusColor(item.status);
     const callsCount = item.callHistory?.length || 0;
 
-    if(payment){
-    return (<MeetingMinutesForm onClose={setPayment}/>)
-  }
+   
     return (
       <View style={styles.cardWrapper}>
         <Card style={styles.card}>
@@ -216,6 +255,9 @@ export default function CustomerListProps({ customers, setCustomers, onCallCusto
       </View>
     );
   };
+ if(payment){
+    return (<MeetingMinutesForm onClose={setPayment}/>)
+  }
 
   return (
     <View style={styles.container}>
@@ -246,13 +288,33 @@ export default function CustomerListProps({ customers, setCustomers, onCallCusto
           <Text style={styles.toolbarText}>Add</Text>
         </Button>
       </View>
-
-      <FlatList
+{/* {filteredCustomers.length>0? <FlatList
         data={filteredCustomers}
         keyExtractor={c => String(c.id)}
         renderItem={renderItem}
         contentContainerStyle={styles.flatListContent}
-      />
+      />:
+      [...Array(5)].map((_, index) => (
+          <SkeletonCard key={index} />
+        ))
+
+    } */}
+      {loading ? (
+        <View style={{ padding: 12 }}>
+          {[...Array(5)].map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </View>
+      ) : filteredCustomers.length > 0 ? (
+        <FlatList
+          data={filteredCustomers}
+          keyExtractor={(c) => String(c.id)}
+          renderItem={renderItem}
+          contentContainerStyle={styles.flatListContent}
+        />
+      ) : (
+        <Text style={{ color: '#94a3b8', textAlign: 'center', marginTop: 20 }}>No customers found</Text>
+      )}
 
       <AddCustomerModal
         isOpen={isModalOpen}

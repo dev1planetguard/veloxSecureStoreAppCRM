@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  SafeAreaView,
+
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -17,6 +17,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // import ScheduleMeetingScreen from './ScheduleMeetingScreen';
 import { hp, wp } from '../../utils/responsive';
 import OnCallWorkflowProps from './OnCallWorkflowProps';
+import WalkIn from '../salesrep/WalkIn';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SalesRepDashboard() {
   const [activeTab, setActiveTab] = useState('on-call');
@@ -60,8 +62,8 @@ export default function SalesRepDashboard() {
     switch (activeTab) {
       case 'on-call':
         return <OnCallWorkflowProps />;
-    //   case 'walk-in':
-    //     return <WalkInWorkflow />;
+      case 'walk-in':
+        return <WalkIn />;
     //   case 'schedule':
     //     return <ScheduleMeetingScreen />;
     //   default:

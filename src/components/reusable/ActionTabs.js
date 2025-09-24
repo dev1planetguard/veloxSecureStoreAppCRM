@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { hp, wp } from '../../utils/responsive';
+import { hp, responsiveFontSize, wp } from '../../utils/responsive';
 
 const ActionTabs = ({ actions, onActionPress }) => {
   return (
@@ -29,17 +29,15 @@ const styles = StyleSheet.create({
   },
   tabItem: {
     backgroundColor: '#2563eb',
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    borderRadius: 20,
-    width:wp(27),
-    alignItems:'center',
-    
-    
+    paddingVertical: hp(1),
+    // paddingHorizontal: 14,
+    borderRadius: wp(20),
+    width:wp(26),
+    alignItems:'center', 
   },
   tabText: {
     color: '#ffff',
-    fontSize: 12,
+    fontSize: responsiveFontSize(9),
     fontWeight: '500',
   },
 });
