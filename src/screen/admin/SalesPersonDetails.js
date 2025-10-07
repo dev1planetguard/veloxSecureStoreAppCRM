@@ -5,13 +5,13 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native'
-import Ionicons from 'react-native-vector-icons/Ionicons'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import Feather from 'react-native-vector-icons/Feather'
 import { API_BASE_URL } from '../../config/config'
 
 function SalesPersonDetails() {
@@ -67,17 +67,17 @@ function SalesPersonDetails() {
   )
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView edges={['top']} style={styles.safe}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.openDrawer()}>
-          <Ionicons name="menu" size={26} color="#fff" />
+          <Feather name="menu" size={26} color="#60A5FA" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Sales Person Details</Text>
       </View>
 
       <View style={styles.container}>
         {loading ? (
-          <ActivityIndicator size="large" color="blue" />
+          <ActivityIndicator size="large" color="#60A5FA" />
         ) : (
           <FlatList
             data={salesPersons}
@@ -96,17 +96,17 @@ function SalesPersonDetails() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#000' },
+  safe: { flex: 1, backgroundColor: '#0F172A' },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1e1e1e',
+    backgroundColor: '#1E293B',
     paddingHorizontal: 12,
     paddingVertical: 16,
   },
   backBtn: { marginRight: 12 },
   headerTitle: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 20,
     fontWeight: '700',
   },
@@ -115,25 +115,25 @@ const styles = StyleSheet.create({
     paddingBottom: 70,
   },
   emptyText: {
-    color: '#777',
+    color: '#94A3B8',
     textAlign: 'center',
     marginTop: 20,
   },
   card: {
-    backgroundColor: '#1e1e1e',
+    backgroundColor: '#1E293B',
     borderRadius: 8,
     padding: 16,
     marginBottom: 12,
     elevation: 2,
   },
   name: {
-    color: '#FFD700',
+    color: '#60A5FA',
     fontSize: 18,
     fontWeight: '700',
     marginBottom: 8,
   },
   field: {
-    color: '#ccc',
+    color: '#E2E8F0',
     fontSize: 14,
     marginTop: 4,
   },

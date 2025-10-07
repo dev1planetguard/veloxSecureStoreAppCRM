@@ -6,29 +6,29 @@ import { hp } from '../../utils/responsive';
 
 
 const CustomDrawer = (props) => {
-const {onpress,details} = props
-console.log('detaild in custom',details);
-
+const { onpress, details } = props;
 
   const handleLogout = () => {
-    // Implement your logout logic here
-    onpress()
-    console.log("Logout pressed");
+    onpress();
   };
   const PLACEHOLDER_AVATAR =
     'https://www.gravatar.com/avatar/?d=mp&s=200';
 
     const userImageUrl = ''
+    const isArray = Array.isArray(details);
+    const firstName = isArray ? details?.[0]?.firstName : details?.firstName;
+    const lastName = isArray ? details?.[0]?.lastName : details?.lastName;
+    const email = isArray ? details?.[0]?.email : details?.email;
   return (
     <View style={styles.container}>
       {/* Profile Section */}
       <View style={styles.profileSection}>
         <Image
-           source={{ uri: userImageUrl || PLACEHOLDER_AVATAR }}// Replace with user's profile image
+           source={{ uri: userImageUrl || PLACEHOLDER_AVATAR }}
           style={styles.profileImage}
         />
-        <Text style={styles.profileName}>{details[0].firstName} {details.lastName}</Text>
-        <Text style={styles.profileEmail}>{details[0].email}</Text>
+        <Text style={styles.profileName}>{firstName || 'User'} {lastName || ''}</Text>
+        <Text style={styles.profileEmail}>{email || ''}</Text>
       </View>
 
       {/* Drawer List */}

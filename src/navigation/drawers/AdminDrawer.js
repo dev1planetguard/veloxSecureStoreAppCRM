@@ -2,7 +2,9 @@ import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import SalesLogsScreen from '../../screen/Admin/SalesLoginActivity';
-import CustomDrawerContent from './CustomDrawerContent';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import CustomDrawer from '../../components/reusable/CustomAppDrawer';
 
 // Minimal Admin Dashboard (basic structure)
 // import AdminDashboard from '../../screen/admin/AdminDashboard';
@@ -15,14 +17,44 @@ import AdminDashboard from '../../screen/Admin/AdminDashboard';
 const Drawer = createDrawerNavigator();
 
 export default function AdminDrawer() {
+  const navigation = useNavigation();
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.multiRemove([
+        'jwtToken',
+        'roleType',
+        'userId',
+        'IS_DAILY_CHECKIN',
+      ]);
+    } catch (e) {
+      // noop
+    }
+
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'SplashScreen' }],
+    });
+  };
+
+  // Minimal admin details placeholder to avoid null access in CustomDrawer
+  const adminDetails = { firstName: 'Admin', lastName: '', email: '' };
+
   return (
-    <Drawer.Navigator >
+    <Drawer.Navigator
+      drawerContent={(props) => (
+        <CustomDrawer details={adminDetails} onpress={handleLogout} {...props} />
+      )}
+      screenOptions={{
+        headerStyle: { backgroundColor: '#000' },
+        headerTintColor: '#fff',
+        drawerStyle: { backgroundColor: '#0f172a' },
+        drawerActiveTintColor: '#2563eb',
+        drawerInactiveTintColor: '#ccc',
+      }}
+    >
       <Drawer.Screen options={{
-      title: 'Admin Dashboard', // Displayed title in the header
-      headerStyle: {
-        backgroundColor: '#000', // Change header background color
-      },
-      headerTintColor: '#ffffff', // Change header text color
+      headerShown: false
     }}  name="AdminDashboard" component={AdminDashboard} />
       <Drawer.Screen options={{
       title: 'Sales Login Activity', // Displayed title in the header
