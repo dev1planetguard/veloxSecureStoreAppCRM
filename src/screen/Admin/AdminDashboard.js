@@ -1,15 +1,16 @@
 // AdminDashboard.js
 import React, { useState } from 'react';
 import {
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Icon from 'react-native-vector-icons/Feather';
+import { useNavigation } from '@react-navigation/native';
 
 // Screens
 import CustomersManagement from './CustomersManagement';
@@ -25,6 +26,7 @@ const tabs = [
 ];
 
 function AdminDashboard() {
+  const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState('overview');
 
   const renderContent = () => {
@@ -43,12 +45,14 @@ function AdminDashboard() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView edges={['top']} style={styles.container}>
       {/* <View style={styles.topSpacer} /> */}
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Icon name="trending-up" size={22} color="#60A5FA" />
+          <TouchableOpacity onPress={() => navigation.openDrawer()}>
+            <Icon name="menu" size={22} color="#60A5FA" />
+          </TouchableOpacity>
           <Text style={styles.headerTitle}>Admin Dashboard</Text>
         </View>
         <View style={styles.liveBadge}>

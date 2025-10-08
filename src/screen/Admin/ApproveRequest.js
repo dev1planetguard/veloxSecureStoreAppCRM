@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useNavigation } from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
@@ -47,17 +48,17 @@ export default function ApproveRequest() {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.center}>
+      <SafeAreaView edges={['top']} style={styles.center}>
         <ActivityIndicator size="large" color="#2979FF" />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView edges={['top']} style={styles.safe}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-          <Feather name="arrow-left" size={wp('6%')} color="#fff" />
+        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.openDrawer()}>
+          <Feather name="menu" size={wp('6%')} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Approve Request</Text>
       </View>
