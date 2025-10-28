@@ -14,6 +14,7 @@ import ApproveRequest from '../../screen/Admin/ApproveRequest';
 import AdminDashboard from '../../screen/Admin/AdminDashboard';
 import SalesActivity from '../../screen/Admin/SalesActivity';
 import UserListScreen from '../../screen/Admin/UserListScreen';
+import SalesLogsScreenDetail from '../../screen/Admin/SalesDailyLoginActivityDetails';
 
 const Drawer = createDrawerNavigator();
 
@@ -86,6 +87,13 @@ export default function AdminDrawer() {
         component={SalesActivity}
         options={{ headerShown: false, drawerItemStyle: { display: 'none' } }}
       />
+      <Drawer.Screen
+        name="SalesLogsScreenDetail"
+        component={SalesLogsScreenDetail}
+        options={{ headerShown: false, drawerItemStyle: { display: 'none' } }}
+      />
+
+      
     </Drawer.Navigator>
   );
 }

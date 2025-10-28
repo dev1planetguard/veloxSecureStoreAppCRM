@@ -12,7 +12,7 @@ import { splitDateTime } from '../../utils/UtilityFunction';
 import Feather from '@react-native-vector-icons/feather';
 import { hp, responsiveFontSize, wp } from '../../utils/responsive';
 
-const CardWithActions = ({ companyName, date, time, contactPerson, contactPersonmail,productInterested,address, handleClick }) => {
+const CardWithActions = ({ companyName, date, time, contactPerson, contactPersonmail,productInterested,address, handleClick,handleSchedule }) => {
   const [expanded, setExpanded] = useState(false);
   const animation = useRef(new Animated.Value(0)).current; // initial height is 0
 console.log('data in card with actions',companyName, date, time, contactPerson);
@@ -31,10 +31,12 @@ const result = splitDateTime(date)
   };
 
   const handleAction = (action) => {
+    console.log('action from ',action);
+    
     switch (action) {
-    case 'Payment link': return handleClick(action,companyName,contactPerson,address,productInterested);
-    case 'Schedule Meet': return { backgroundColor: '#3b82f6', text: '#eff6ff' };
-    case 'Send Proposal': return handleClick(action,companyName,contactPerson,address,productInterested);
+    case 'Payment': return handleClick(action,companyName,contactPerson,address,productInterested);
+    case 'Schedule': return handleSchedule();
+    case 'Proposal': return handleClick(action,companyName,contactPerson,address,productInterested);
     default: return { backgroundColor: '#475569', text: '#cbd5e1' };
   }
     // console.log(`${action} pressed for ${companyName}`);
@@ -86,7 +88,7 @@ const result = splitDateTime(date)
       <Animated.View style={[styles.animatedContainer, { height: animatedHeight }]}>
         <View style={{borderWidth:0.2,borderColor:'grey'}}></View>
         <ActionTabs
-          actions={['Payment link', 'Send Proposal', 'Schedule Meet']}
+          actions={['Payment', 'Proposal', 'Schedule']}
           onActionPress={handleAction}
         />
       </Animated.View>

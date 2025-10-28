@@ -28,8 +28,8 @@ console.log('detaild in custom',details);
            source={{ uri: userImageUrl || PLACEHOLDER_AVATAR }}// Replace with user's profile image
           style={styles.profileImage}
         />
-        <Text style={styles.profileName}>{details[0]?.firstName} {details?.lastName}</Text>
-        <Text style={styles.profileEmail}>{details[0]?.email}</Text>
+        {/* <Text style={styles.profileName}>{details[0]?.firstName} {details?.lastName}</Text>
+        <Text style={styles.profileEmail}>{details[0]?.email}</Text> */}
       </View>
 
       {/* Drawer List */}

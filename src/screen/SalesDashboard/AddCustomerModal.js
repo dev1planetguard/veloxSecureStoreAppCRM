@@ -1,288 +1,3 @@
-// import React, { useEffect, useRef, useState } from 'react';
-// import {
-//   ActivityIndicator,
-//   Alert,
-//   FlatList,
-//   Modal,
-//   Platform,
-//   StyleSheet,
-//   Text,
-//   TextInput,
-//   TouchableOpacity,
-//   View,
-// } from 'react-native';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-// import PropTypes from 'prop-types';
-// import CountryPicker from 'react-native-country-picker-modal';
-// // import FeatherIcon from 'react-native-vector-icons/Feather';
-// import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-
-// import Button from '../../components/moduleBased/sales/Button';
-// import Input from '../../components/moduleBased/sales/Input';
-// import  Dropdown  from '../../components/reusable/Dropdown';
-// import { fetchAddressSuggestions } from '../../api/Sales/fetchAddressApi';
-
-// const countries = [
-//   { code: 'US', name: { common: 'United States' }, dialCode: '+1', flag: '🇺🇸' },
-//   { code: 'IN', name: { common: 'India' }, dialCode: '+91', flag: '🇮🇳' },
-//   { code: 'GB', name: { common: 'United Kingdom' }, dialCode: '+44', flag: '🇬🇧' },
-//   { code: 'CA', name: { common: 'Canada' }, dialCode: '+1', flag: '🇨🇦' },
-// ];
-
-// const AddCustomerModal = ({ isOpen, onClose, onAddCustomer, editing, editData }) => {
-//   const [firstName, setFirstName] = useState('');
-//   const [lastName, setLastName] = useState('');
-//   const [selectedCountry, setSelectedCountry] = useState(countries[1]);
-//   const [phoneNumber, setPhoneNumber] = useState('');
-//   const [address, setAddress] = useState('');
-//   const [addressSuggestions, setAddressSuggestions] = useState([]);
-//   const [isFetchingAddress, setIsFetchingAddress] = useState(false);
-//   const [isPhoneValid, setIsPhoneValid] = useState(true);
-//   const [stateProv, setStateProv] = useState('');
-//   const [city, setCity] = useState('');
-//   const [countryName, setCountryName] = useState('India');
-//   const [stateOptions, setStateOptions] = useState([]);
-//   const [cityOptions, setCityOptions] = useState([]);
-//   const [countryCode, setCountryCode] = useState('IN');
-//   const debounceTimer = useRef(null);
-
-//   // Load stored location / prefill edit data
-//   useEffect(() => {
-//     const fetchStoredLocation = async () => {
-//       try {
-//         const storedState = await AsyncStorage.getItem('selectedState');
-//         const storedCity = await AsyncStorage.getItem('selectedCity');
-//         const storedCountry = await AsyncStorage.getItem('selectedCountry');
-
-//         if (editing && editData) {
-//           setFirstName(editData.firstName || '');
-//           setLastName(editData.lastName || '');
-//           setAddress(editData.address || '');
-//           setPhoneNumber(editData.phone ? editData.phone.replace(/^\+?\d{1,3}/, '') : '');
-//           const foundCountry =
-//             countries.find(
-//               (c) =>
-//                 c.dialCode.replace('+', '') === String(editData.countryCode) ||
-//                 c.dialCode === `+${editData.countryCode}`
-//             ) || countries[1];
-//           setSelectedCountry(foundCountry);
-
-//           if (storedState) setStateProv(storedState);
-//           if (storedCity) setCity(storedCity);
-//           if (storedCountry) setSelectedCountry(storedCountry);
-//         } else {
-//           setFirstName('');
-//           setLastName('');
-//           setAddress('');
-//           setPhoneNumber('');
-//           setSelectedCountry(countries[1]);
-//           setStateProv('');
-//           setCity('');
-//         }
-
-//         setAddressSuggestions([]);
-//       } catch (error) {
-//         console.error('Failed to fetch stored location:', error);
-//       }
-//     };
-
-//     fetchStoredLocation();
-//   }, [isOpen, editing, editData]);
-
-//   // Debounced address API
-//   useEffect(() => {
-//     if (!isOpen) return;
-//     if (debounceTimer.current) clearTimeout(debounceTimer.current);
-//     if (address.length < 2) {
-//       setAddressSuggestions([]);
-//       setIsFetchingAddress(false);
-//       return;
-//     }
-//     setIsFetchingAddress(true);
-//     debounceTimer.current = setTimeout(async () => {
-//       try {
-//         const res = await fetchAddressSuggestions(address);
-//         if (res.statusCode === 200 && Array.isArray(res.data)) {
-//           setAddressSuggestions(res.data);
-//         } else {
-//           setAddressSuggestions([]);
-//         }
-//       } catch (err) {
-//         setAddressSuggestions([]);
-//       } finally {
-//         setIsFetchingAddress(false);
-//       }
-//     }, 400);
-//     return () => clearTimeout(debounceTimer.current);
-//   }, [address, isOpen]);
-
-//   const handleSubmit = () => {
-//     if (!firstName || !lastName || !phoneNumber || !address || !city || !stateProv) {
-//       Alert.alert('Validation Error', 'Please fill all required fields');
-//       return;
-//     }
-
-//     if (firstName.trim().toLowerCase() === lastName.trim().toLowerCase()) {
-//       Alert.alert('Validation Error', 'First and last name cannot be the same');
-//       return;
-//     }
-
-//     if (!/^\d{10}$/.test(phoneNumber)) {
-//       Alert.alert('Validation Error', 'Phone number must be exactly 10 digits');
-//       return;
-//     }
-
-//     onAddCustomer({
-//       firstName: firstName.trim(),
-//       lastName: lastName.trim(),
-//       phone: `${selectedCountry.dialCode}${phoneNumber}`,
-//       address: address.trim(),
-//       countryCode: selectedCountry.dialCode.replace('+', ''),
-//       city,
-//       state: stateProv,
-//     });
-
-//     if (!editing) {
-//       setFirstName('');
-//       setLastName('');
-//       setPhoneNumber('');
-//       setAddress('');
-//       setSelectedCountry(countries[1]);
-//       setAddressSuggestions([]);
-//       setStateProv('');
-//       setCity('');
-//       setCountryName('');
-//       onClose();
-//     }
-//   };
-
-//   const handlePhoneInput = (val) => {
-//     const clean = val.replace(/[^0-9]/g, '');
-//     setPhoneNumber(clean);
-//     setIsPhoneValid(clean.length === 10);
-//   };
-
-//   const handleStateSelect = (selectedState) => {
-//     setStateProv(selectedState);
-//     AsyncStorage.setItem('selectedState', selectedState);
-//   };
-
-//   const handleCitySelect = (selectedCity) => {
-//     setCity(selectedCity);
-//     AsyncStorage.setItem('selectedCity', selectedCity);
-//   };
-
-//   const handleCountryName = (val) => setCountryName(val);
-
-//   return (
-//     <Modal visible={isOpen} transparent animationType="slide">
-//       <View style={styles.backdrop}>
-//         <View style={styles.content}>
-//           <Text style={styles.title}>{editing ? 'Edit Customer' : 'Add New Customer'}</Text>
-
-//           <Input placeholder="First Name" value={firstName} onChangeText={setFirstName} />
-//           <Input placeholder="Last Name" value={lastName} onChangeText={setLastName} />
-
-//           <View style={styles.phoneRow}>
-//             <CountryPicker
-//               countryCode={selectedCountry.code}
-//               withFilter
-//               withFlag
-//               withCallingCode
-//               onSelect={(country) =>
-//                 setSelectedCountry({
-//                   code: country.cca2,
-//                   name: typeof country.name === 'string' ? { common: country.name } : country.name,
-//                   dialCode: `+${country.callingCode[0]}`,
-//                   flag: country.flag || '',
-//                 })
-//               }
-//             />
-//             <Text style={styles.dialCode}>{selectedCountry.dialCode}</Text>
-//             <Input
-//               placeholder="Phone"
-//               value={phoneNumber}
-//               onChangeText={handlePhoneInput}
-//               keyboardType="numeric"
-//               maxLength={12}
-//               style={{ flex: 1 }}
-//             />
-//           </View>
-
-//           <Input placeholder="Address" value={address} onChangeText={setAddress} />
-//           {isFetchingAddress && <ActivityIndicator size="small" color="#2563eb" />}
-//           {addressSuggestions.length > 0 && (
-//             <FlatList
-//               data={addressSuggestions}
-//               keyExtractor={(item) => item}
-//               renderItem={({ item }) => (
-//                 <TouchableOpacity onPress={() => setAddress(item)}>
-//                   <Text style={{ padding: 6 }}>{item}</Text>
-//                 </TouchableOpacity>
-//               )}
-//               style={{ maxHeight: hp(20) }}
-//             />
-//           )}
-
-//           <Dropdown
-//             options={stateOptions}
-//             selected={stateProv}
-//             placeholder="Select State"
-//             onSelect={handleStateSelect}
-//           />
-
-//           <Dropdown
-//             options={cityOptions}
-//             selected={city}
-//             placeholder="Select City"
-//             onSelect={handleCitySelect}
-//           />
-
-//           <Input placeholder="Country Name" value={countryName} onChangeText={handleCountryName} editable={false} />
-
-//           <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: hp(2) }}>
-//             <Button variant="ghost" onPress={onClose} style={{ marginRight: wp(2) }}>
-//               <Text style={{ color: '#fff' }}>Cancel</Text>
-//             </Button>
-//             <Button variant="default" onPress={handleSubmit}>
-//               {editing ? 'Update' : 'Add'}
-//             </Button>
-//           </View>
-//         </View>
-//       </View>
-//     </Modal>
-//   );
-// };
-
-// AddCustomerModal.propTypes = {
-//   isOpen: PropTypes.bool.isRequired,
-//   onClose: PropTypes.func.isRequired,
-//   onAddCustomer: PropTypes.func.isRequired,
-//   editing: PropTypes.bool,
-//   editData: PropTypes.object,
-// };
-
-// const styles = StyleSheet.create({
-//   backdrop: {
-//     flex: 1,
-//     backgroundColor: 'rgba(0,0,0,0.4)',
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//   },
-//   content: {
-//     width: wp(90),
-//     backgroundColor: '#1e293b',
-//     borderRadius: 10,
-//     padding: wp(4),
-//   },
-//   title: { color: '#fff', fontSize: hp(2.5), fontWeight: 'bold', marginBottom: hp(2), alignSelf: 'center' },
-//   phoneRow: { flexDirection: 'row', alignItems: 'center', marginBottom: hp(1) },
-//   dialCode: { marginHorizontal: wp(1), color: '#fff', fontWeight: 'bold', fontSize: hp(2) },
-// });
-
-// export default AddCustomerModal;
-
-/////////////////
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { City, State } from 'country-state-city';
@@ -675,20 +390,49 @@ const AddCustomerModal = ({ isOpen, onClose, onAddCustomer, editing, editData })
   };
 
   // Search contacts
-  const handleSearchContacts = (search) => {
-    setContactSearch(search);
-    Contacts.getContactsMatchingString(search, (err, contacts) => {
-      if (err) {
-        console.error('Error searching contacts:', err);
+  // const handleSearchContacts = (search) => {
+  //   setContactSearch(search);
+  //   Contacts.getContactsMatchingString(search, (err, contacts) => {
+  //     if (err) {
+  //       console.error('Error searching contacts:', err);
+  //       return;
+  //     }
+      
+  //     const filtered = contacts.filter(
+  //       (c) => c.phoneNumbers && c.phoneNumbers.length > 0 && (c.givenName || c.familyName)
+  //     );
+  //     setContacts(filtered);
+  //   });
+  // };
+
+  const handleSearchContacts = async (search) => {
+    try {
+      setContactSearch(search);
+      setContactsLoading(true);
+  
+      if (!search) {
+        const allContacts = await Contacts.getAll();
+        const filtered = allContacts.filter(
+          (c) => c.phoneNumbers?.length > 0 && (c.givenName || c.familyName)
+        );
+        setContacts(filtered);
         return;
       }
-      
-      const filtered = contacts.filter(
-        (c) => c.phoneNumbers && c.phoneNumbers.length > 0 && (c.givenName || c.familyName)
+  
+      const results = await Contacts.getContactsMatchingString(search);
+      const filtered = results.filter(
+        (c) => c.phoneNumbers?.length > 0 && (c.givenName || c.familyName)
       );
       setContacts(filtered);
-    });
+    } catch (err) {
+      console.error('Error searching contacts:', err);
+      Alert.alert('Error', 'Failed to search contacts');
+    } finally {
+      setContactsLoading(false);
+    }
   };
+  
+  
 
   // Pick a contact and autofill fields
   const handleContactSelect = (c) => {

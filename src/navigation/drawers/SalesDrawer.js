@@ -17,6 +17,7 @@ import SalesRepDashboard from '../../screen/SalesDashboard/SalesCallAndWalkin';
 import CustomDrawerContent from './CustomDrawerContent';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import VisitFormScreen from '../../screen/SalesDashboard/VisitForm';
+import SalesActivity from '../../screen/SalesDashboard/SalesActivity';
 
 const Drawer = createDrawerNavigator();
 
@@ -83,6 +84,7 @@ const navigation = useNavigation()
      <Drawer.Navigator
       drawerContent={(props) => <CustomDrawer details={userDetails?.data} onpress={()=>setHasCheckedOutToday(true)} {...props} />}
       screenOptions={{
+        headerShown:false,
         headerStyle: { backgroundColor: '#000' },
         headerTintColor: '#fff',
         drawerStyle: { backgroundColor: '#0f172a' }, // Dark theme for drawer
@@ -105,9 +107,14 @@ const navigation = useNavigation()
       headerShown:false
    }} name='SalesRepDash' component={SalesRepDashboard}/>
 <Drawer.Screen options={{
-    title:'Engagements',
+    title: '',               // optional
+    headerShown: false,
+    drawerItemStyle: { height: 0 }, // hides it from drawer
+  }} name='VisitFormScreen' component={VisitFormScreen}/>
+   <Drawer.Screen options={{
+    title:'My Activity',
       headerShown:false
-   }} name='VisitFormScreen' component={VisitFormScreen}/>
+   }} name='SalesActivity' component={SalesActivity}/>
    
     </Drawer.Navigator>
 

@@ -155,7 +155,7 @@ const requestLocationPermission = async () => {
   };
 
   const handleComplete = async () => {
-    if (selfieUri && locationData) {
+    // if (selfieUri && locationData) {
       if (header === 'Daily Check-Out') {
         await AsyncStorage.setItem('IS_DAILY_CHECKIN', 'false');
         await AsyncStorage.removeItem('jwtToken');
@@ -166,7 +166,7 @@ const requestLocationPermission = async () => {
         onComplete()
         // navigation.replace('SalesDrawer');
       }
-    }
+    // }
   };
 
   return (

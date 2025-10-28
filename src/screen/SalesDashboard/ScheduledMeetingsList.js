@@ -12,7 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { API_BASE_URL } from '../configurl';
+// import { API_BASE_URL } from '../configurl';
 //import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { DrawerActions, useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -21,6 +21,7 @@ import Feather from '@react-native-vector-icons/feather';
 import { hp, responsiveFontSize } from '../../utils/responsive';
 import ToastMessage, { showToast } from '../../components/reusable/Toast';
 import SkeletonCard from '../../components/skeleton/Skeleton';
+import { API_BASE_URL } from '../../api/AxiosInterceptor';
 // import DailyCheckIn from './DailyCheckIn';
 
 export default function ScheduledMeetingsList() {
@@ -59,7 +60,7 @@ export default function ScheduledMeetingsList() {
                 console.log('all meeting details : ');
           setLoading(true);
           const token = await AsyncStorage.getItem('jwtToken');
-          const res = await fetch(`http://192.168.0.204:9191/api/v1/meetings/allMeetingDetails`,
+          const res = await fetch(`${API_BASE_URL}/meetings/allMeetingDetails`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }
@@ -245,7 +246,7 @@ export default function ScheduledMeetingsList() {
   
       // ======= CHANGED ENDPOINT TO reScheduleMeeting =======
       const res = await fetch(
-        `http://192.168.0.204:9191/api/v1/meetings/reScheduleMeeting`,
+        `${API_BASE_URL}/meetings/reScheduleMeeting`,
         {
           method: 'POST',
           headers: {
@@ -526,7 +527,10 @@ const handleCheckInComplete = async () => {
 
 // Add these styles for the new UI elements
 const styles = StyleSheet.create({
-  safe: { flex: 1,bottom:hp(5)},
+  safe: { flex: 1,
+    // ,bottom:hp(5),
+    top:hp(3)
+  },
   center: {
     flex: 1,
     backgroundColor: '#0f172a',

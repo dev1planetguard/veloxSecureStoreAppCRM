@@ -83,6 +83,7 @@ const pickerStyle = {
 
 function MeetingMinutesForm({ navigation: navProp, route, onClose, action }) {
   const navigation = useNavigation();
+  // console.log("Navigation object:", navigation);
   const customer = route?.params?.customer || {};
   const purchasePickerRef = useRef();
   const clientTypePickerRef = useRef();
@@ -97,7 +98,7 @@ function MeetingMinutesForm({ navigation: navProp, route, onClose, action }) {
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [customerInterest, setCustomerInterest] = useState('Interested')
   // Dropdown/form state
-  const [customerInterested, setCustomerInterested] = useState(action ? 'Interested' : '');
+  const [customerInterested, setCustomerInterested] = useState(action ? 'Interested' : 'Interested');
   const [purchaseType, setPurchaseType] = useState(action == 'Proposal' ? 'probably' : '');
   const [clientType, setClientType] = useState('');
   const [isSendingPaymentLoader, setIsSendingPaymentLoader] = useState(false);
@@ -125,7 +126,8 @@ function MeetingMinutesForm({ navigation: navProp, route, onClose, action }) {
     notes: '',
     purchaseType: '',
     clientType: '',
-    discount: '0'
+    discount: '0',
+    notInterestReason: '',   
   });
 
   // Get selected state name
@@ -187,39 +189,81 @@ function MeetingMinutesForm({ navigation: navProp, route, onClose, action }) {
   }, []);
 
   // Handler for form input changes
-  const handleChange = (field, value) => {
-    setForm(prev => ({ ...prev, [field]: value }));
+  // const handleChange = (field, value) => {
+  //   setForm(prev => ({ ...prev, [field]: value }));
 
-    // If pincode is changed and is 6 digits, fetch city/state
-    if (field === 'pincode' && value.length === 6 && /^\d{6}$/.test(value)) {
-      fetchCityState(value);
-    } else if (field === 'productName') {
-      if (value === 'PlanetGuard Personal') {
+  //   // If pincode is changed and is 6 digits, fetch city/state
+  //   if (field === 'pincode' && value.length === 6 && /^\d{6}$/.test(value)) {
+  //     fetchCityState(value);
+  //   } else if (field === 'productName') {
+  //     if (value === 'PlanetGuard Personal') {
 
-        setForm(prev => ({ ...prev, ['licenseType']: 'Personal' }));
-      } else {
-        setForm(prev => ({ ...prev, ['licenseType']: 'Free Trial' }));
-      }
+  //       setForm(prev => ({ ...prev, ['licenseType']: 'Personal' }));
+  //     } else {
+  //       setForm(prev => ({ ...prev, ['licenseType']: 'Free Trial' }));
+  //     }
 
-      // if (value === 'Personal') {
-      //   setForm(prev => ({ ...prev, ['quantity']: '1' }));
-      // } else if (value === 'SME') {
-      //   setForm(prev => ({ ...prev, ['quantity']: '5' }));
-      // } else {
-      //   setForm(prev => ({ ...prev, ['quantity']: '1' }));
-      // }
-    } else if (field === 'discount') {
-      const discountValue = parseInt(value);
-      const limit = clientType === 'company' ? 40 : 30;
+  //     // if (value === 'Personal') {
+  //     //   setForm(prev => ({ ...prev, ['quantity']: '1' }));
+  //     // } else if (value === 'SME') {
+  //     //   setForm(prev => ({ ...prev, ['quantity']: '5' }));
+  //     // } else {
+  //     //   setForm(prev => ({ ...prev, ['quantity']: '1' }));
+  //     // }
+  //   } else if (field === 'discount') {
+  //     const discountValue = parseInt(value);
+  //     const limit = clientType === 'company' ? 40 : 30;
 
-      if (!isNaN(discountValue) && discountValue <= limit) {
-        setForm(prev => ({ ...prev, discount: value }));
-      } else {
-        console.log(`Discount too high for client type ${clientType}`);
-        setForm(prev => ({ ...prev, discount: '' }));
-      }
+  //     if (!isNaN(discountValue) && discountValue <= limit) {
+  //       setForm(prev => ({ ...prev, discount: value }));
+  //     } else {
+  //       console.log(`Discount too high for client type ${clientType}`);
+  //       setForm(prev => ({ ...prev, discount: '' }));
+  //     }
+  //   }
+  // };
+
+  // Handler for form input changes
+const handleChange = (field, value) => {
+  console.log(value,'handle change')
+  setForm(prev => ({ ...prev, [field]: value }));
+
+  // If pincode is changed and is 6 digits, fetch city/state
+  if (field === 'pincode' && value.length === 6 && /^\d{6}$/.test(value)) {
+    fetchCityState(value);
+  }
+
+  // When productName changes → set license type accordingly
+  else if (field === 'productName') {
+    if (value === 'PlanetGuard Personal') {
+      setForm(prev => ({ ...prev, licenseType: 'Personal' }));
+    } else {
+      setForm(prev => ({ ...prev, licenseType: 'Free Trial' }));
     }
-  };
+  }
+
+  // When discount changes → enforce limit based on client type
+  else if (field === 'discount') {
+    const discountValue = parseInt(value);
+    const limit = clientType === 'company' ? 40 : 30;
+
+    if (!isNaN(discountValue) && discountValue <= limit) {
+      setForm(prev => ({ ...prev, discount: value }));
+    } else {
+      console.log(`Discount too high for client type ${clientType}`);
+      setForm(prev => ({ ...prev, discount: '' }));
+    }
+  }
+
+  // ✅ When Not Interested reason changes
+  else if (field === 'notInterestReason') {
+    console.log("User selected reason:", value);
+    // You can add logic here if you want to do something special
+    // e.g., disable other fields or show message
+    setForm(prev => ({ ...prev, notInterestReason: value }));
+  }
+};
+
 
   // Fetch city/state on pincode
   // const fetchCityState = async (pincode) => {
@@ -238,7 +282,9 @@ function MeetingMinutesForm({ navigation: navProp, route, onClose, action }) {
   // };
 
   const fetchCityState = async (pincode) => {
+    console.log('📍 fetchCityState called with:', pincode);
     try {
+      console.log('Fetching city/state for pincode:', pincode);
       const data = await getCityState(pincode); // this is already response.data
       // if your backend sends {statusCode: 200, data:{city:'x', state:'y'}}
       if (data.statusCode === 200 && data.data) {
@@ -465,59 +511,196 @@ function MeetingMinutesForm({ navigation: navProp, route, onClose, action }) {
   };
 
   // Save handler
-  const handleSave = async () => {
-    const userId = await AsyncStorage.getItem('userId');
+  // const handleSave = async () => {
+  //   const userId = await AsyncStorage.getItem('userId');
+  //   if (!validateForm(form, customerInterested, purchaseType, clientType)) {
+  //     return;
+  //   }
+
+  //   const body = {
+  //     // firstName: form.firstName,
+  //     // lastName: form.lastName,
+  //     // email: form.email,
+  //     // address: form.address,
+  //     // state: form.state,
+  //     // city: form.city,
+  //     // pincode: form.pincode,
+  //     // companyName: form.companyName,
+  //     // purpose: form.purpose,
+  //     // productName: form.productName,
+  //     // quantity: form.quantity,
+  //     // notes: form.notes,
+  //     // type: purchaseType,
+  //     // time: form.timeRange,
+  //     // budget: form.budget,
+  //     // purchaseType: form.licenseType,
+  //     // contactName: clientType === 'company'
+  //     //   ? `${form.contactFirstName} ${form.contactLastName}`.trim()
+  //     //   : '',
+  //     // contactEmail: form.contactEmail,
+  //     // gstNos: form.gstNo,
+  //     // userId: userId,
+  //     // discount: form.discount,
+  //     // clientType: clientType
+
+
+  //     firstName: form.firstName,
+  // lastName: form.lastName,
+  // email: form.email,
+  // address: form.address,
+  // state: form.state,
+  // city: form.city,
+  // pincode: form.pincode,
+  // userId: userId,
+
+  // // Conditional fields
+  // companyName: customerInterested === "Interested" ? form.companyName : null,
+  // purpose: customerInterested === "Interested" ? form.purpose : null,
+  // productName: customerInterested === "Interested" ? form.productName : null,
+  // quantity: customerInterested === "Interested" ? form.quantity : null,
+  // notes: customerInterested === "Interested" ? form.notes : null,
+  // type: customerInterested === "Interested" ? purchaseType : null,
+  // time: customerInterested === "Interested" ? form.timeRange : null,
+  // budget: customerInterested === "Interested" ? form.budget : null,
+  // purchaseType: customerInterested === "Interested" ? form.licenseType : null,
+  // contactName:
+  //   customerInterested === "Interested" && clientType === "company"
+  //     ? `${form.contactFirstName} ${form.contactLastName}`.trim()
+  //     : null,
+  // contactEmail:
+  //   customerInterested === "Interested" ? form.contactEmail : null,
+  // gstNos: customerInterested === "Interested" ? form.gstNo : null,
+  // discount: customerInterested === "Interested" ? form.discount : null,
+  // clientType: customerInterested === "Interested" ? clientType : null,
+  //   };
+
+  //   try {
+  //     const response = await saveMeetingMinutes(body);
+  //     if (response.statusCode === 200) {
+  //       Alert.alert(
+  //         'Success',
+  //         response.message,
+  //         [
+  //           {
+  //             text: 'OK',
+  //             onPress: () => navigation.navigate('SalesRepDash')
+  //           }
+  //         ]
+  //       );
+  //     } else {
+  //       Alert.alert('Error', response.message || 'Could not save MOM');
+  //     }
+  //   } catch (e) {
+  //     Alert.alert('Error', 'Network error');
+  //   }
+  // };
+
+
+  // new Save handler for "Not Intrested"
+const handleSave = async () => {
+  const userId = await AsyncStorage.getItem('userId');
+
+  // ✅ Skip validation if Not Interested
+  if (customerInterested === "Not Interested") {
+    console.log("Skipping validation because customer is Not Interested");
+  } else {
     if (!validateForm(form, customerInterested, purchaseType, clientType)) {
       return;
     }
+  }
 
-    const body = {
-      firstName: form.firstName,
-      lastName: form.lastName,
-      email: form.email,
-      address: form.address,
-      state: form.state,
-      city: form.city,
-      pincode: form.pincode,
-      companyName: form.companyName,
-      purpose: form.purpose,
-      productName: form.productName,
-      quantity: form.quantity,
-      notes: form.notes,
-      type: purchaseType,
-      time: form.timeRange,
-      budget: form.budget,
-      purchaseType: form.licenseType,
-      contactName: clientType === 'company'
+  const body = {
+    firstName: form.firstName,
+    lastName: form.lastName,
+    email: form.email,
+    address: form.address,
+    state: form.state,
+    city: form.city,
+    pincode: form.pincode,
+    userId: userId,
+
+    // Conditional fields
+    companyName: customerInterested === "Interested" ? form.companyName : null,
+    purpose: customerInterested === "Interested" ? form.purpose : null,
+    productName: customerInterested === "Interested" ? form.productName : null,
+    quantity: customerInterested === "Interested" ? form.quantity : null,
+    notes: customerInterested === "Interested" ? form.notes : null,
+    type: customerInterested === "Interested" ? purchaseType : null,
+    time: customerInterested === "Interested" ? form.timeRange : null,
+    budget: customerInterested === "Interested" ? form.budget : null,
+    purchaseType: customerInterested === "Interested" ? form.licenseType : null,
+    contactName:
+      customerInterested === "Interested" && clientType === "company"
         ? `${form.contactFirstName} ${form.contactLastName}`.trim()
-        : '',
-      contactEmail: form.contactEmail,
-      gstNos: form.gstNo,
-      userId: userId,
-      discount: form.discount,
-      clientType: clientType
-    };
+        : null,
+    contactEmail:
+      customerInterested === "Interested" ? form.contactEmail : null,
+    gstNos: customerInterested === "Interested" ? form.gstNo : null,
+    discount: customerInterested === "Interested" ? form.discount : null,
+    clientType: customerInterested === "Interested" ? clientType : null,
 
-    try {
-      const response = await saveMeetingMinutes(body);
-      if (response.statusCode === 200) {
-        Alert.alert(
-          'Success',
-          response.message,
-          [
-            {
-              text: 'OK',
-              onPress: () => navigation.navigate('SalesRepDash')
-            }
-          ]
-        );
-      } else {
-        Alert.alert('Error', response.message || 'Could not save MOM');
-      }
-    } catch (e) {
-      Alert.alert('Error', 'Network error');
-    }
+    notInterestReason: customerInterested === "Not Interested"
+    ? form.notInterestReason
+    : null,
   };
+
+  console.log("🟢 Saving Meeting MOM with body:", JSON.stringify(body, null, 2));
+
+  try {
+    const response = await saveMeetingMinutes(body);
+    if (response.statusCode === 200) {
+      // Alert.alert(
+      //   "Success",
+      //   response.message,
+      //   [
+      //     {
+      //       text: "OK",
+      //       onPress: () => navigation.navigate("SalesRepDash"),
+      //     },
+      //   ]
+      // );
+      // Alert.alert("Success", response.message, [
+      //   {
+      //     text: "OK",
+      //     onPress: () => {
+      //       setTimeout(() => {
+      //         console.log("Navigating to SalesRepDash...");
+      //         navigation.navigate("SalesRepDash");
+      //       }, 300); // ⏳ small delay to ensure UI updates before navigation
+      //     },
+      //   },
+      // ]);
+
+      // Alert.alert("Success", response.message);
+      // console.log("Navigating to SalesRepDash...");
+      // setTimeout(() => {
+      //   navigation.navigate("SalesRepDash");
+      // }, 500);
+
+      Alert.alert("Success", response.message);
+
+      // 🚀 Navigate after slight delay (ensures alert fully renders)
+      setTimeout(() => {
+        console.log("Navigating to SalesRepDash...");
+        navigation.navigate("SalesRepDash");
+      }, 800);
+
+      // Alert.alert("Success", response.message, [
+      //   { text: "OK" },
+      // ], {
+      //   onDismiss: () => {
+      //     console.log("Navigating to SalesRepDash...");
+      //     navigation.navigate("SalesDashboardScreen");
+      //   }
+      // });
+    } else {
+      Alert.alert("Error", response.message || "Could not save MOM");
+    }
+  } catch (e) {
+    Alert.alert("Error", "Network error");
+  }
+};
+
 
   // Proposal handler
   const handleSendProposal = async () => {
@@ -700,8 +883,12 @@ function MeetingMinutesForm({ navigation: navProp, route, onClose, action }) {
                   </View>
                 </View>
 
+                
+
                 {/* Product details, if interested */}
                 {customerInterested === "Interested" && (
+                  <>
+
                   <View style={{ marginTop: hp('1%'), backgroundColor: '#151538', padding: wp('3%'), borderRadius: wp('2.5%') }}>
                     {/* Product Dropdown */}
                     <Text style={styles.label}>Product Name</Text>
@@ -782,9 +969,10 @@ function MeetingMinutesForm({ navigation: navProp, route, onClose, action }) {
 
 
                   </View>
-                )}
 
-                {/* Purchase Type */}
+                  {/* /for not intrested */}
+
+                     {/* Purchase Type */}
                 <Text style={styles.sectionTitle}>Purchase Type</Text>
                 {/* <TouchableOpacity
             activeOpacity={0.7}
@@ -971,8 +1159,50 @@ function MeetingMinutesForm({ navigation: navProp, route, onClose, action }) {
                   onChangeText={t => handleChange('discount', t)}
                 />
 
-                {/* Action Buttons: Show as per Customer Interest */}
-                <View style={styles.actions}>
+                
+                  
+
+
+
+{/* /for not intrested */}
+
+              
+
+
+
+
+
+
+
+
+
+
+                  </>
+                )}
+
+{customerInterested === "Not Interested" && (
+  <View style={{ 
+      marginTop: hp('1%'), 
+      backgroundColor: '#151538', 
+      padding: wp('3%'), 
+      borderRadius: wp('2.5%') 
+    }}>
+    <Text style={styles.label}>Reason</Text>
+    <Dropdown
+      txt="#fff"
+      options={[
+        { label: 'Not Interested', value: 'not_interested' },
+        { label: 'Not Decided', value: 'not_decided' },
+      ]}
+      selected={form.notInterestReason}
+      placeholder={'Select reason'}
+      onSelect={v => handleChange('notInterestReason', v)}
+    />
+  </View>
+)}
+
+                  {/* Action Buttons: Show as per Customer Interest */}
+                  <View style={styles.actions}>
                   {customerInterested === "Interested" ? (
                     <>
                       {purchaseType == 'probably' ?
@@ -1017,6 +1247,7 @@ function MeetingMinutesForm({ navigation: navProp, route, onClose, action }) {
                     </TouchableOpacity>
                   )}
                 </View>
+               
               </View>
             </ScrollView>
           </View>

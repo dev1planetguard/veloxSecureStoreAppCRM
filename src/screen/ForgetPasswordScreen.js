@@ -73,33 +73,24 @@ export default function ForgotPasswordScreen() {
     if (!newPassword || !confirmPassword) return Alert.alert('Error', 'Please fill in all fields');
     if (newPassword !== confirmPassword) return Alert.alert('Error', 'Passwords do not match');
     try {
-      // Attempt 1: JSON body (email, otp, newPassword)
-      const url = `${API_BASE_URL}/resetPasword`;
+      // Use the correct endpoint that matches your working API
+      const url = `${API_BASE_URL}/otp/resetPasword?mail=${encodeURIComponent(email)}&password=${encodeURIComponent(newPassword)}`;
       console.log('[ForgotPassword] resetPassword →', url);
-      let res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, otp, newPassword }),
-      });
-      let text = await res.text();
-      console.log('[ForgotPassword] resetPassword status (json):', res.status, 'body:', text);
-      let data; try { data = JSON.parse(text); } catch { data = { statusCode: res.ok ? 200 : 500, message: text }; }
-      if (res.ok || data.statusCode === 200) {
-        return Alert.alert('Success', 'Password reset successful', [{ text: 'OK', onPress: () => navigation.navigate('Login') }]);
+      const res = await fetch(url, { method: 'POST' });
+      const text = await res.text();
+      console.log('[ForgotPassword] resetPassword status:', res.status, 'body:', text);
+      let data;
+      try { 
+        data = JSON.parse(text); 
+      } catch { 
+        data = { statusCode: res.ok ? 200 : 500, message: text }; 
       }
-
-      // Attempt 2: Query params (mail, otp, password), POST without body
-      const urlWithQuery = `${API_BASE_URL}/resetPassword?mail=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}&password=${encodeURIComponent(newPassword)}`;
-      console.log('[ForgotPassword] resetPassword (query) →', urlWithQuery);
-      res = await fetch(urlWithQuery, { method: 'POST' });
-      text = await res.text();
-      console.log('[ForgotPassword] resetPassword status (query):', res.status, 'body:', text);
-      try { data = JSON.parse(text); } catch { data = { statusCode: res.ok ? 200 : 500, message: text }; }
+      
       if (res.ok || data.statusCode === 200) {
-        return Alert.alert('Success', 'Password reset successful', [{ text: 'OK', onPress: () => navigation.navigate('Login') }]);
+        Alert.alert('Success', 'Password reset successful', [{ text: 'OK', onPress: () => navigation.navigate('Login') }]);
+      } else {
+        Alert.alert('Error', data.message || 'Failed to reset password');
       }
-
-      Alert.alert('Error', data.message || 'Failed to reset password');
     } catch (err) {
       Alert.alert('Network Error', err.message);
     }

@@ -18,6 +18,9 @@ import { API_BASE_URL } from '../configurl';
 import { fetchTodaysDailyReport } from '../../api/apiFunctions/SalesActivityAdmin/SalesActivityDaily';
 import { formatTime, getCoordsFromString, openMap, openMapWithCoords, resolveImageUrl } from '../../utils/UtilityFunction';
 import pLimit from 'p-limit';
+import { calculateTotalPathDistance } from '../../utils/DistanceCalculation';
+import Feather from '@react-native-vector-icons/feather';
+import { useNavigation } from '@react-navigation/native';
 
 const IMAGE_BASE_URL = 'http://192.168.0.204:9191/';
 // const IMAGE_BASE_URL =  'http://45.118.160.135:9192/';//public
@@ -29,29 +32,6 @@ const [search, setSearch] = useState('');
 const [searchText, setSearchText] = useState('');
 const [filteredData, setFilteredData] = useState([]); // Filtered data
 
-//   const fetchLogs = async () => {
-//     try {
-//       const response = await fetchTodaysDailyReport()
-//       const text = await response.text();
-//       console.log('Response status:', response.status);
-//       console.log('Response text:', text);
-
-//       if (response.headers.get('content-type')?.includes('application/json')) {
-//         const json = JSON.parse(text);
-//         console.log(json, 'salesloginlogout')
-//         setData(json.data || []);
-//         setFilteredData(json.data)
-//         await fetchAllAddresses(json);
-//       } else {
-//         console.warn('Expected JSON but got:', text);
-//         setData([]);
-//       }
-//     } catch (err) {
-//       console.error('Fetch error:', err);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
 
 const fetchLogs = async () => {
   try {
@@ -60,7 +40,7 @@ const fetchLogs = async () => {
 
     setData(responseData.data || []);
     setFilteredData(responseData.data || []);
-    await fetchAllAddresses(responseData);
+    // await fetchAllAddresses(responseData);
   } catch (err) {
     console.error('Fetch error:', err);
   } finally {
@@ -70,41 +50,8 @@ const fetchLogs = async () => {
 
   useEffect(() => {
     fetchLogs();
-  }, []);
+  });
 
-
-
-  
-// const getAddressFromCoords = async (latitude, longitude) => {
-//   try {
-//     console.log('coords',latitude,longitude);
-    
-//     const [address] = await Location.reverseGeocodeAsync({ latitude, longitude });
-//     return address;
-//   } catch (error) {
-//     console.error('Reverse geocode error:', error);
-//     return null;
-//   }
-// };
-
-// const getAddressFromCoords = async (latitude, longitude) => {
-//   try {
-//     const coords = {
-//       latitude: Number(latitude),
-//       longitude: Number(longitude),
-//     };
-
-//     if (isNaN(coords.latitude) || isNaN(coords.longitude)) {
-//       throw new Error('Invalid coordinates');
-//     }
-
-//     const [address] = await Location.reverseGeocodeAsync(coords);
-//     return address;
-//   } catch (error) {
-//     console.error('Reverse geocode error:', error);
-//     return null;
-//   }
-// };
 
 const searchSalesExe = (text) => {
   setSearchText(text);
@@ -130,83 +77,31 @@ const searchSalesExe = (text) => {
 
  
 const [addressMap, setAddressMap] = useState({});
-// console.log('address map',addressMap);
+const navigation = useNavigation()
 
-// const fetchAllAddresses = async (logs) => {
-//   console.log('loooogggs',logs);
-  
+// const fetchAllAddresses = async (logs, concurrency = 5) => {
 //   const newMap = {};
-//   for (let item of logs) {
-//     console.log('itemmmmm',item);
-    
-//     const [lat, lng] = getCoordsFromString(item.liveLocation);
-//     if (lat !== null && lng !== null) {
+//   const limit = pLimit(concurrency);
+
+//   const promises = logs.map((item) =>
+//     limit(async () => {
+//       const [lat, lng] = getCoordsFromString(item.liveLocation);
+//       const key = `${item.email}_${item.loginTime}`;
+
 //       try {
-//         const result = await getAddressFromCoords('19.0650613,72.995304');
-//         newMap[item.id] = result?.name || 'Unknown';
+//         const result = await getAddressFromCoords(lat, lng);
+//         console.log('Address result:', result);
+//         newMap[key] = result || 'Unknown';
 //       } catch (e) {
-//         newMap[item.id] = 'Failed to load';
-//       }
-//     } else {
-//       newMap[item.id] = 'Invalid location';
-//     }
-//   }
-//   console.log('new mappp',newMap);
-  
-//   setAddressMap(newMap);
-// };
-
-
-// 2. Fetch addresses after getting logs
-// const fetchAllAddresses = async (logs) => {
-//   const newMap = {};
-
-//   for (let index = 0; index < logs.length; index++) {
-//     const item = logs[index];
-
-//     const [lat, lng] = getCoordsFromString(item.liveLocation);
-//     const key = item.email + '_' + item.loginTime; // unique fallback ID
-
-//     if (true) {
-//       try {
-//         const result = await getAddressFromCoords(lat,lng);
-//         console.log('ressssssssssssss',result);
-        
-//         newMap[key] = result?.name || 'Unknown';
-//       } catch (e) {
+//         console.error('Error fetching address:', e);
 //         newMap[key] = 'Failed to load';
 //       }
-//     } else {
-//     }
-//   }
+//     })
+//   );
 
+//   await Promise.all(promises);
 //   setAddressMap(newMap);
 // };
-
-
-const fetchAllAddresses = async (logs, concurrency = 5) => {
-  const newMap = {};
-  const limit = pLimit(concurrency);
-
-  const promises = logs.map((item) =>
-    limit(async () => {
-      const [lat, lng] = getCoordsFromString(item.liveLocation);
-      const key = `${item.email}_${item.loginTime}`;
-
-      try {
-        const result = await getAddressFromCoords(lat, lng);
-        console.log('Address result:', result);
-        newMap[key] = result || 'Unknown';
-      } catch (e) {
-        console.error('Error fetching address:', e);
-        newMap[key] = 'Failed to load';
-      }
-    })
-  );
-
-  await Promise.all(promises);
-  setAddressMap(newMap);
-};
 
 
 
@@ -238,6 +133,8 @@ const AddressFetcher = ({ locationString }) => {
 
 
   const renderItem =  ({ item, index }) => {
+    console.log('iteeemmmmm',item);
+    
     // const loginImg = item.imagePath
     //   ? `${IMAGE_BASE_URL}${item.imagePath.replace(/\\/g, '/')}`
     //   : null;
@@ -263,69 +160,119 @@ const AddressFetcher = ({ locationString }) => {
 //     //  const address = await getAddressFromCoords(lat,lng)
 //      console.log('addresss',address);
      
+// const  = [
+//   { latitude: 37.7749, longitude: -122.4194 }, // San Francisco
+//   { latitude: 34.0522, longitude: -118.2437 }, // Los Angeles
+//   { latitude: 40.7128, longitude: -74.0060 },  // New York
+//   { latitude: 41.8781, longitude: -87.6298 },  // Chicago
+// ];
 
+const coordinatesArray = [
+  { name: "Sahar Road Metro Station", latitude: 19.0967, longitude: 72.8681 },
+  { name: "Marol Naka Metro Station", latitude: 19.1005, longitude: 72.8711 },
+  { name: "Chakala Metro Station", latitude: 19.1119, longitude: 72.8678 },
+  { name: "CSMIA Terminal 1 (Domestic)", latitude: 19.0967, longitude: 72.8681 },
+  { name: "CSMIA Terminal 2 (International)", latitude: 19.0883, longitude: 72.8702 }
+];
+
+const totalDistanceInMeters = calculateTotalPathDistance(coordinatesArray);
+  const totalDistanceInKm = (totalDistanceInMeters / 1000).toFixed(2);
     return (
-      <View style={styles.card}>
-        {/* <Text style={styles.recordTitle}>Record #{index + 1}</Text> */}
-        <Text style={styles.label}>Name: {item.firstname} {item.lastname}</Text>
-        <Text style={styles.label}>Email: {item.email}</Text>
-        <Text style={styles.label}>Mobile Number: {item.mobileNumber}</Text>
-        <Text style={styles.label}>City Name: {item.cityname}</Text>
-        <View style={styles.row}>
-          {/* Login Info */}
-          <View style={styles.column}>
-            <Text style={styles.label}>Login</Text>
+      // <View style={styles.card}>
+      //   {/* <Text style={styles.recordTitle}>Record #{index + 1}</Text> */}
+      //   <Text style={styles.label}>Name: {item.firstname} {item.lastname}</Text>
+      //   <Text style={styles.label}>Email: {item.email}</Text>
+      //   <Text style={styles.label}>Mobile Number: {item.mobileNumber}</Text>
+      //   <Text style={styles.label}>City Name: {item.cityname}</Text>
+      //    <Text style={styles.label}>Distance Covered: {totalDistanceInKm} kms</Text>
+      //   <View style={styles.row}>
+      //     {/* Login Info */}
+      //     <View style={styles.column}>
+      //       <Text style={styles.label}>Login</Text>
 
-            {loginImg ? (
-              <Image
-                source={{ uri: loginImg }}
-                style={styles.image}
-                onError={() => console.warn('Failed to load login image:', loginImg)}
-              />
-            ) : (
-              <Text>No Login Photo</Text>
-            )}
-            <Text style={styles.timesDate}>Time: {formatTime(item.loginTime)}</Text>
-            {item.loginLocation && (
-              <TouchableOpacity onPress={() => openMap(item.loginLocation)}>
-                <Text style={styles.link}>Login Location</Text>
-              </TouchableOpacity>
-            )}
-          </View>
+      //       {loginImg ? (
+      //         <Image
+      //           source={{ uri: loginImg }}
+      //           style={styles.image}
+      //           onError={() => console.warn('Failed to load login image:', loginImg)}
+      //         />
+      //       ) : (
+      //         <Text>No Login Photo</Text>
+      //       )}
+      //       <Text style={styles.timesDate}>Time: {formatTime(item.loginTime)}</Text>
+      //       {/* {item.loginLocation && (
+      //         <TouchableOpacity onPress={() => openMap(item.loginLocation)}>
+      //           <Text style={styles.link}>Login Location</Text>
+      //         </TouchableOpacity>
+      //       )} */}
+      //     </View>
 
-          {/* Logout Info */}
-          <View style={styles.column}>
-            <Text style={styles.label}>Logout</Text>
-            {logoutImg ? (
-              <Image
-                source={{ uri: logoutImg }}
-                style={styles.image}
-                onError={() => console.warn('Failed to load logout image:', logoutImg)}
-              />
-            ) : (
-              <Text>No Logout Photo</Text>
-            )}
-            <Text style={styles.timesDate}>Time: {formatTime(item.logoutTime)}</Text>
-            {item.logoutLocation && (
-              <TouchableOpacity onPress={() => openMap(item.logoutLocation)}>
-                <Text style={styles.link}>Logout Location</Text>
-              </TouchableOpacity>
-            )}
-          </View>
+      //     {/* Logout Info */}
+      //     <View style={styles.column}>
+      //       <Text style={styles.label}>Logout</Text>
+      //       {logoutImg ? (
+      //         <Image
+      //           source={{ uri: logoutImg }}
+      //           style={styles.image}
+      //           onError={() => console.warn('Failed to load logout image:', logoutImg)}
+      //         />
+      //       ) : (
+      //         <Text>No Logout Photo</Text>
+      //       )}
+      //       <Text style={styles.timesDate}>Time: {formatTime(item.logoutTime)}</Text>
+      //       {/* {item.logoutLocation && (
+      //         <TouchableOpacity onPress={() => openMap(item.logoutLocation)}>
+      //           <Text style={styles.link}>Logout Location</Text>
+      //         </TouchableOpacity>
+      //       )} */}
+      //     </View>
+      //   </View>
+      //   <Text style={styles.timesDate}>{formatTime(item.liveLocationTime)}</Text>
+      //   <TouchableOpacity
+      //     style={styles.trackButton}
+      //     onPress={() => openMapWithCoords(item.liveLocation)}
+      //   >
+      //     <Text style={styles.trackButtonText}>Track Salesperson</Text>
+      //   </TouchableOpacity>
+      //   {/* // )} */}
+
+      // </View>
+       <TouchableOpacity onPress={()=>navigation.navigate('SalesLogsScreenDetail',item.id)} style={styles.card}>
+      <View style={styles.header}>
+        <Image
+          source={
+            loginImg
+              ? { uri: loginImg }
+              : null // fallback image
+          }
+          style={styles.avatar}
+        />
+        <View style={styles.infoContainer}>
+          <Text style={styles.nameText}>
+            {item.firstname} {item.lastname}
+          </Text>
+          <Text style={styles.activeText}>Active Today</Text>
         </View>
-        {/* Track Button */}
-        {/* {item.liveLocation && ( */}
-        <AddressFetcher locationString={item.liveLocation} />
-        <Text style={styles.timesDate}>{formatTime(item.liveLocationTime)}</Text>
-        <TouchableOpacity
-          style={styles.trackButton}
-          onPress={() => openMapWithCoords(item.liveLocation)}
-        >
-          <Text style={styles.trackButtonText}>Track Salesperson</Text>
-        </TouchableOpacity>
-        {/* // )} */}
-
+        <Feather name="chevron-right" size={20} color="#ccc" />
       </View>
+
+      <View style={styles.details}>
+        <View style={styles.row}>
+          <Feather name="mail" size={16} color="#aaa" />
+          <Text style={styles.detailText}>{item.email || 'Email'}</Text>
+        </View>
+        <View style={styles.row}>
+          <Feather name="phone" size={14} color="#aaa" />
+          <Text style={styles.detailText}>
+            {item.mobileNumber || 'Mobile'}
+          </Text>
+        </View>
+        <View style={styles.row}>
+          <Feather name="map-pin" size={16} color="#aaa" />
+          <Text style={styles.detailText}>{item.cityname || 'City'}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
     );
   };
 
@@ -441,6 +388,53 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     // paddingHorizontal: 0,
     backgroundColor: 'transparent',
+  },
+  card: {
+    backgroundColor: '#1e1e1e',
+    borderRadius: 12,
+    padding: 15,
+    marginVertical: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  avatar: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: '#333',
+  },
+  infoContainer: {
+    flex: 1,
+    marginLeft: 10,
+  },
+  nameText: {
+    color: '#FFD54F', // yellowish for name
+    fontWeight: '600',
+    fontSize: 15,
+  },
+  activeText: {
+    color: '#81C784', // green for active
+    fontSize: 13,
+  },
+  details: {
+    marginTop: 5,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 4,
+  },
+  detailText: {
+    color: '#ccc',
+    marginLeft: 8,
+    fontSize: 13,
   },
 
 });

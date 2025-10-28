@@ -15,16 +15,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // import OnCallWorkflow from './OnCallWorkflowbkk';
 // import WalkInWorkflow from './WalkInWorkflow';
 // import ScheduleMeetingScreen from './ScheduleMeetingScreen';
-import { hp, wp } from '../../utils/responsive';
+import { hp, responsiveFontSize, wp } from '../../utils/responsive';
 import OnCallWorkflowProps from './OnCallWorkflowProps';
 import WalkIn from '../salesrep/WalkIn';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Feather from '@react-native-vector-icons/feather';
+import { useNavigation } from '@react-navigation/native';
+import Header from '../../components/reusable/Header';
 
 export default function SalesRepDashboard() {
   const [activeTab, setActiveTab] = useState('on-call');
   const [userName, setUsername] = useState('');
   const [time, setTime] = useState(new Date());
   const [hasCheckedInToday, setHasCheckedInToday] = useState(false);
+  const navigation = useNavigation()
 
   useEffect(() => {
     const loadUsername = async () => {
@@ -53,6 +57,7 @@ export default function SalesRepDashboard() {
   }, []);
 
   const handleCheckInComplete = async () => {
+    
     const today = new Date().toDateString();
     await AsyncStorage.setItem('lastCheckIn', today);
     setHasCheckedInToday(true);
@@ -80,15 +85,17 @@ export default function SalesRepDashboard() {
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <View style={styles.userInfo}>
-          <View style={styles.avatar} />
-          <View>
+          <Feather onPress={()=>navigation.openDrawer()} size={responsiveFontSize(20)} color={'white'} name='menu'/>
+          {/* <View style={styles.avatar} /> */}
+          {/* <View>
             <Text style={styles.title}>Sales Dashboard</Text>
             <Text style={styles.subtitle}>Welcome back, {userName}</Text>
           </View>
         </View>
-      </View>
+      </View> */} 
+       <Header title="Engagements" onMenuPress={() => navigation.openDrawer()} />
 
       {/* Tabs */}
       <View style={styles.tabsContainer}>
@@ -126,7 +133,7 @@ const styles = StyleSheet.create({
     padding: wp(4),
     backgroundColor: '#1e293b',
   },
-  userInfo: { flexDirection: 'row', alignItems: 'center' },
+  userInfo: { flexDirection: 'row', alignItems: 'center', gap:wp(5) },
   avatar: {
     width: wp(10),
     height: wp(10),
@@ -135,6 +142,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: wp(3),
+    gap:wp(10)
   },
   title: {
     color: '#fff',

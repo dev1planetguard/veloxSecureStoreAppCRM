@@ -5,18 +5,22 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { hp } from '../../utils/responsive';
 
 const Dropdown = ({ txt, bg, options, selected, placeholder, onSelect }) => {
-  console.log('dd colooooorrrr', bg);
+  console.log('dd colooooorrrrrrr', options);
 
   const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState('');
 
   const label = selected
-    ? options.find(o => o.value === selected)?.label
+    ?placeholder=='Select Stage'?options.find(o => o === selected) :options.find(o => o.value === selected)?.label
     : placeholder;
 
-  const filtered = options.filter(
+  const filtered = placeholder=='Select Stage'? options?.filter(
+    o => o.toLowerCase().includes(filter.toLowerCase())
+  ):
+  options?.filter(
     o => o.label.toLowerCase().includes(filter.toLowerCase())
-  );
+  )
+  ;
 
   return (
     <View style={[styles.dropdownContainer, open && styles.dropdownOpen]}>
@@ -61,12 +65,12 @@ const Dropdown = ({ txt, bg, options, selected, placeholder, onSelect }) => {
                   key={opt.value}
                   style={styles.dropdownItem}
                   onPress={() => {
-                    onSelect(opt.value);
+                    onSelect(placeholder=='Select Stage'?opt:opt.value);
                     setOpen(false);
                     setFilter('');
                   }}
                 >
-                  <Text style={styles.dropdownItemText}>{opt.label}</Text>
+                  <Text style={styles.dropdownItemText}>{placeholder=='Select Stage'?opt:opt.label}</Text>
                 </TouchableOpacity>
               ))
             ) : (

@@ -1,4 +1,4 @@
-// WalkInWorkflow.js (CLI version with selfie skipped, improved logging + API handling)
+
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useRef, useState } from 'react';
@@ -20,6 +20,7 @@ import { API_BASE_URL } from '../../config/config';
 import { useNavigation } from '@react-navigation/native';
 import { launchCamera } from 'react-native-image-picker';
 import Dropdown from '../../components/reusable/Dropdown';
+import Geolocation from 'react-native-geolocation-service';
 
 const STAGE_API = `${API_BASE_URL}/saleStage/getSaleStageListing`;
 const STATIC_PRODUCTS = [
@@ -36,6 +37,8 @@ export default function WalkIn() {
   const [productLoading, setProductLoading] = useState(false);
   const [stageLoading, setStageLoading] = useState(true);
   const [validationErrors, setValidationErrors] = useState({});
+  const [locationData, setLocationData] = useState(null);
+  const [locationLoading, setLocationLoading] = useState(false);
   const pickerRef = useRef();
 
   const initialData = {
@@ -94,6 +97,19 @@ export default function WalkIn() {
     return true;
   };
 
+  const requestLocationPermission = async () => {
+    if (Platform.OS === 'android') {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+      );
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
+    } else if (Platform.OS === 'ios' && Geolocation.requestAuthorization) {
+      Geolocation.requestAuthorization('whenInUse');
+      return true;
+    }
+    return true;
+  };
+
   const takeSelfie = async () => {
     const hasPermission = await requestCameraPermission();
     if (!hasPermission) {
@@ -118,8 +134,9 @@ export default function WalkIn() {
         const uri = response?.assets?.[0]?.uri;
         if (uri) {
           setSelfieUri(uri);
-          Alert.alert('Selfie Captured', 'Proceeding to onboarding form.');
-          setStep('onboarding');
+          // Automatically capture location after selfie
+          captureLocationAfterSelfie();
+          Alert.alert('Selfie Captured', 'Capturing your location...');
         } else {
           Alert.alert('Error', 'Could not capture image. Please try again.');
         }
@@ -127,14 +144,37 @@ export default function WalkIn() {
     );
   };
 
-  const askLocation = async () => {
-    if (Platform.OS === 'android') {
-      const status = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-      );
-      return status === PermissionsAndroid.RESULTS.GRANTED;
+  const captureLocationAfterSelfie = async () => {
+    setLocationLoading(true);
+    const hasPermission = await requestLocationPermission();
+    console.log('Location permission granted:', hasPermission);
+    
+    if (!hasPermission) {
+      console.log('❌ Location Permission denied');
+      setLocationLoading(false);
+      return;
     }
-    return true;
+
+    Geolocation.getCurrentPosition(
+      (position) => {
+        console.log('📍 Location captured:', position.coords);
+        const geoloc = `${position.coords.latitude},${position.coords.longitude}`;
+        setLocationData({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          geoString: geoloc,
+        });
+        setLocationLoading(false);
+        setStep('onboarding');
+        Alert.alert('Location Captured', `Coordinates: ${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)}`);
+      },
+      (error) => {
+        console.log('❌ Location error:', error);
+        setLocationLoading(false);
+        Alert.alert('Location Error', 'Could not capture location. Please try again.');
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
   };
 
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -189,6 +229,9 @@ export default function WalkIn() {
   };
 
   const handleSchedule = async () => {
+    console.log('🚀 [WalkIn] Schedule Next Meeting button clicked!');
+    console.log('🚀 [WalkIn] Starting form submission process...');
+    
     const errors = {};
     Object.keys(data).forEach((key) => {
       if (key !== 'company' && key !== 'gstNumber' && key !== 'telephone' && !data[key]) {
@@ -214,15 +257,15 @@ export default function WalkIn() {
       Alert.alert('Validation Error', 'Please capture a selfie before scheduling');
       return;
     }
+    
+    if (!locationData) {
+      Alert.alert('Validation Error', 'Please capture location. Please take selfie again.');
+      return;
+    }
+
     if (!validateFields()) return;
 
     setScheduleLoading(true);
-
-    if (!(await askLocation())) {
-      Alert.alert('Permission Denied', 'Location is required');
-      setScheduleLoading(false);
-      return;
-    }
 
     const payload = {
       firstName: data.firstName,
@@ -240,6 +283,10 @@ export default function WalkIn() {
       userID: Number(userId),
       stages: data.stages,
       telephone: data.telephone || '',
+      // Location fields - temporarily commented out for backend compatibility
+      // latitude: locationData.latitude,
+      // longitude: locationData.longitude, 
+      location: locationData.geoString,
     };
 
     const formData = new FormData();
@@ -250,7 +297,50 @@ export default function WalkIn() {
       name: 'selfie.jpg',
     });
 
-    console.log('[WalkIn] Submitting payload:', payload);
+    console.log('[WalkIn] Submitting payload (location captured but not sent to backend yet):', payload);
+    console.log('[WalkIn] Location data available:', locationData);
+    
+    // Comprehensive API payload logging
+    console.log('=== WALK-IN API PAYLOAD DEBUG ===');
+    console.log('📤 API Endpoint:', `${API_BASE_URL}/salesperson/walkInCustomer`);
+    console.log('📤 Method: POST');
+    console.log('📤 Headers:', { Authorization: token ? `Bearer ${token}` : '' });
+    console.log('📤 Form Data Contents:');
+    console.log('  └─ data (JSON string):', JSON.stringify(payload, null, 2));
+    console.log('  └─ image (selfie):', {
+      uri: selfieUri,
+      type: 'image/jpeg',
+      name: 'selfie.jpg'
+    });
+    console.log('📤 Complete Payload Object:', {
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      email: payload.email || 'N/A',
+      phone: payload.phone,
+      address: payload.address,
+      companyName: payload.companyName || 'N/A',
+      contactPerson: payload.contactPerson,
+      contactEmail: payload.contactEmail,
+      contactPhone: payload.contactPhone,
+      role: payload.role,
+      productName: payload.productName,
+      requirement: payload.requirement || 'N/A',
+      meeting: payload.meeting,
+      userID: payload.userID,
+      stages: payload.stages,
+      telephone: payload.telephone || 'N/A',
+      // Location fields (currently commented out)
+      locationCaptured: locationData ? 'YES' : 'NO',
+      locationData: locationData || 'NOT CAPTURED',
+      // Note: When enabled, location will be sent as:
+      // latitude: locationData.latitude,
+      // longitude: locationData.longitude,
+      // Location: locationData.geoString
+    });
+    console.log('📤 Selfie URI:', selfieUri);
+    console.log('📤 Token Present:', token ? 'YES' : 'NO');
+    console.log('📤 User ID:', userId);
+    console.log('=== END API PAYLOAD DEBUG ===');
 
     try {
       const res = await fetch(`${API_BASE_URL}/salesperson/walkInCustomer`, {
@@ -261,11 +351,25 @@ export default function WalkIn() {
 
       const text = await res.text();
       console.log('[WalkIn] Raw API Response:', text);
+      
+      // Detailed API response logging
+      console.log('=== API RESPONSE DEBUG ===');
+      console.log('📥 Response Status:', res.status);
+      console.log('📥 Response OK:', res.ok);
+      console.log('📥 Response Headers:', Object.fromEntries(res.headers.entries()));
+      console.log('📥 Raw Response Text:', text);
 
       let json;
       try {
         json = JSON.parse(text);
+        console.log('📥 Parsed JSON Response:', json);
+        console.log('📥 Response Status Code:', json.statusCode);
+        console.log('📥 Response Message:', json.message);
+        console.log('📥 Response Data:', json.data);
+        console.log('=== END API RESPONSE DEBUG ===');
       } catch (parseErr) {
+        console.error('❌ JSON Parse Error:', parseErr);
+        console.error('❌ Raw text that failed to parse:', text);
         throw new Error(`Invalid JSON Response: ${text}`);
       }
 
@@ -276,6 +380,11 @@ export default function WalkIn() {
         console.warn('[WalkIn] Proceeding as success despite non-success response:', json);
       }
       Alert.alert('Success', 'Customer added successfully');
+      // Reset form
+      setSelfieUri(null);
+      setLocationData(null);
+      setData(initialData);
+      setStep('start');
     } catch (e) {
       console.error('[WalkIn] Network/API error:', e);
       Alert.alert('Error', 'Network/API error: ' + (e.message || 'Unknown error'));
@@ -301,7 +410,10 @@ export default function WalkIn() {
           <View style={styles.center}>
             <Text style={styles.bigTitle}>Take Selfie</Text>
             <Text style={styles.subtitle}>Use your front camera to capture a selfie</Text>
-            <TouchableOpacity style={styles.primaryButton} onPress={takeSelfie}>
+            <TouchableOpacity 
+              style={styles.primaryButton}
+              onPress={takeSelfie}
+            >
               <Text style={styles.primaryBtnText}>Capture Selfie</Text>
             </TouchableOpacity>
           </View>

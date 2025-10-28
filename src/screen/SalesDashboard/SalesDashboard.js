@@ -12,6 +12,7 @@ import { hp } from '../../utils/responsive';
 import { requestLocationPermissions } from '../../service/Back_ground_location';
 import { startForegroundTracking } from '../../service/Fore_Ground_location';
 import { locationTracking } from '../../api/apiFunctions/User_Sales_exe/LocationTrackingApi';
+import Header from '../../components/reusable/Header';
 
 const SalesDashboard = () => {
   const [hasCheckedInToday, setHasCheckedInToday] = useState()
@@ -68,17 +69,20 @@ const SalesDashboard = () => {
         return <Text style={styles.text}>Unknown Tab</Text>;
     }
   };
+  const navigation = useNavigation()
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }}>
+      <Header title="Sales Overview" onMenuPress={() => navigation.openDrawer()} />
+
       {/* <View style={{backgroundColor: '#0f172a' }}> */}
-        <View style={{bottom:hp(7)}}>
+        {/* <View style={{bottom:hp(7)}}> */}
         <TabBar
           tabs={tabs}
           activeIndex={activeTab}
           onTabPress={setActiveTab}
         />
-        </View>
+        {/* </View> */}
         {/* <View style={{backgroundColor:'red'}}> */}
           {renderTabContent()}
           {/* </View> */}

@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import apiMethods from "../../methods/apiMethods";
 import { Alert } from "react-native";
+import { showToast } from "../../../components/reusable/Toast";
 
 
 export const createUser = async (payload, navigation) => {
@@ -23,9 +24,13 @@ export const createUser = async (payload, navigation) => {
     // }
       return data;
   } catch (e) {
-    console.log('error in create user',e.error);
+    console.log('error in create user',e.response.data);
+    showToast(e.response.data.message,5000)
+    return e.response.data
+    // console.log('error in create userrrerrrrrrr',e);
     
-    console.error('Registration Error:', e);
+    
+    // console.log('Registration Error:', e);
     // Alert.alert('Account created successfully!', '');
   }
 };

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { Alert, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { hp, wp } from "../../utils/responsive";
+import { hp, responsiveFontSize, wp } from "../../utils/responsive";
 import InputFieldReusable from "../../components/reusable/InputFieldResuable";
 import OtpSection from "../../components/reusable/OtpSection";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,6 +16,7 @@ import { isStrongPassword } from "../../utils/UtilityFunction";
 import { createUser } from "../../api/apiFunctions/Login/Create_Account_api_function";
 import { genderOptions } from "../../constants/Strings";
 import { showToast } from "../../components/reusable/Toast";
+import Header from "../../components/reusable/Header";
 
 export const CreateAccount = () => {
     const navigation = useNavigation()
@@ -198,7 +199,7 @@ export const CreateAccount = () => {
 
 
     const handleCreateAccount = async () => {
-        setLoading(!loading)
+        setLoading(true)
         validate()
 
         const payload = {
@@ -221,6 +222,31 @@ export const CreateAccount = () => {
             },
         };
 
+//        const payload = {
+//   "firstName": "abd",
+//   "lastName": "shk",
+//   "email": "carlisa@satigan.com",
+//   "mobile": {
+//     "countryCode": "+91",
+//     "number": "9619985210",
+//     "alternate": "1234567898"
+//   },
+//   "password": "Velox@123456",
+//   "confirmPassword": "Velox@123456",
+//   "accountType": "organization",
+//   "billingAddress": {
+//     "street": "Kharghar navi mumbai",
+//     "city": "Kharghar",
+//     "state": "Maharashtra",
+//     "zipCode": "410210",
+//     "country": "India"
+//   },
+//   "organizationDetails": {
+//     "name": "Velox",
+//     "role": "Sales"
+//   }
+// }
+
 
         if (altMobile.trim()) {
             payload.mobile.alternate = altMobile.trim();
@@ -231,7 +257,8 @@ export const CreateAccount = () => {
                 gender,
                 designation: designation.trim(),
             };
-        } else {
+        }
+         else {
             payload.organizationDetails = {
                 name: orgName.trim(),
                 role: orgRole,
@@ -243,6 +270,8 @@ export const CreateAccount = () => {
             navigation.navigate('Login')
             showToast("Account created successfully!", 3000);
             setLoading(!loading)
+        }else{
+             setLoading(false)
         }
     }
 
@@ -253,6 +282,21 @@ export const CreateAccount = () => {
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
             >
+                {/* <View style={{flexDirection:'row',alignItems:'center',gap:wp(5),padding:hp(1)}}>
+                    <TouchableOpacity onPress={()=>navigation.goBack()}>
+                     <Feather
+                                        name={'arrow-left'}
+                                        size={responsiveFontSize(23)}
+                                        color="#2979FF"
+                                    />
+                                    </TouchableOpacity>
+                                    <Text style={[styles.radioText,{fontSize:responsiveFontSize(15)}]}>
+                                        SignUp
+                                        {/* {type.charAt(0).toUpperCase() + type.slice(1)} */}
+                                    {/* </Text> */}
+
+                {/* </View> */}
+                <Header onback={true} backgroundColor={'black'} onMenuPress={()=>navigation.goBack()} title={'Sign Up'}/>
                 <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
                     <View style={styles.card}>
                         <Text style={styles.title}>Create Your Account</Text>

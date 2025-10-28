@@ -4,7 +4,7 @@ import axios from "axios";
 
 export const API_BASE_URL = "http://192.168.0.204:9191/api/v1"; //development env
 // export const API_BASE_URL = 'http://45.118.160.135:9192/api/v1'; // public not secured env
-// export const PROD_BASE_URL = 'https://veloxcrm.com/api/v1'; //production env (secured)
+// export const API_BASE_URL = 'https://veloxcrm.com/api/v1'; //production env (secured)
 
 // Create axios instance
 const api = axios.create({
@@ -16,11 +16,9 @@ const api = axios.create({
 api.interceptors.request.use(
   async (config) => {
     // Example: attach token if exists
-
     //  if (!config.url.includes("/login")) {
     //    const token = await AsyncStorage.getItem("jwtToken");
     //    console.log('in axios interceptor',token);
-
     //   config.headers.Authorization = `Bearer ${token}`;
     // }
     console.log('config urlllllll----', config.url);
@@ -33,7 +31,6 @@ api.interceptors.request.use(
     if (config.data instanceof FormData) {
       config.headers["Content-Type"] = "multipart/form-data";
     }
-
     return config;
   },
   (error) => Promise.reject(error)
